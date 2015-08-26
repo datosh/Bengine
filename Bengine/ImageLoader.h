@@ -6,9 +6,10 @@
 #include "GLTexture.h"
 #include "picopng.h"
 
-class ImageLoader
-{
-public:
-	static GLTexture loadPNG(std::string filePath);
-};
-
+namespace Bengine {
+	class ImageLoader
+	{
+	public:
+		static GLTexture loadPNG(std::string filePath);
+	};
+}

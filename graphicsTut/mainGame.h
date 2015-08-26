@@ -2,13 +2,16 @@
 
 #include "stdafx.h"
 
-#include "Errors.h"
-#include "sprite.h"
-#include "GLSLProgram.h"
-#include "GLTexture.h"
-
 #include <SDL.h>
 #include <glew.h>
+
+#include <Bengine\Bengine.h>
+#include <Bengine\Errors.h>
+#include <Bengine\sprite.h>
+#include <Bengine\GLSLProgram.h>
+#include <Bengine\GLTexture.h>
+#include <Bengine\Window.h>
+
 
 enum class GameState {
 	PLAY,
@@ -36,8 +39,8 @@ private:
 	float m_time;
 	float m_fps, m_frameTime;
 	float m_maxFPS;
-	SDL_Window* m_window;
+	Bengine::Window m_window;
 	GameState m_gameState;
-	std::vector<Sprite*> m_sprites;
-	GLSLProgram m_colorProgram;
+	std::vector<Bengine::Sprite*> m_sprites;
+	Bengine::GLSLProgram m_colorProgram;
 };

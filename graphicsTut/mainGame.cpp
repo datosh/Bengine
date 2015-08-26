@@ -4,7 +4,6 @@ MainGame::MainGame() :
 	m_time(0), 
 	m_screenWidth(1024),
 	m_screenHeight(768), 
-	m_window(nullptr), 
 	m_gameState(GameState::PLAY),
 	m_maxFPS(40),
 	m_fps(0),
@@ -20,11 +19,10 @@ void MainGame::run()
 {
 	initSystems();
 
-
-	m_sprites.push_back(new Sprite());
+	m_sprites.push_back(new Bengine::Sprite());
 	m_sprites.back()->init(-1.0f, -1.0f, 1.0f, 1.0f, "Textures/PNG/CharacterRight_Standing.png");
 
-	m_sprites.push_back(new Sprite());
+	m_sprites.push_back(new Bengine::Sprite());
 	m_sprites.back()->init(0.0f, -1.0f, 1.0f, 1.0f, "Textures/PNG/CharacterRight_Standing.png");
 	
 	
@@ -37,32 +35,7 @@ void MainGame::initSystems()
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	m_window = SDL_CreateWindow("Test Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-		m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
-	if (!m_window)
-	{
-		fatalError("SDL_CreateWindow failed!");
-	}
-
-	SDL_GLContext glContext = SDL_GL_CreateContext(m_window);
-	if (!glContext)
-	{
-		fatalError("SDL_GL_CreateContext failed!");
-	}
-
-	glewExperimental = true;
-	GLenum error = glewInit();
-	if (error != GLEW_OK)
-	{
-		fatalError("glewInit failed!");
-	}
-
-	// Check OpenGL Version
-	std::printf("*** OpenGL Version: %s ***\n", glGetString(GL_VERSION));
-
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-
-	SDL_GL_SetSwapInterval(1);
+	m_window.create("Game Engine", m_screenWidth, m_screenHeight, 0);
 
 	initShaders();
 }
@@ -148,7 +121,7 @@ void MainGame::drawGame()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	m_colorProgram.unuse();
 
-	SDL_GL_SwapWindow(m_window);
+	m_window.swapBuffer();
 
 }
 
