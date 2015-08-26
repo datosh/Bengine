@@ -131,7 +131,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainGame.cpp" />
     <ClCompile Include="picopng.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="TextureCache.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Errors.h" />
@@ -141,8 +143,10 @@
     <ClInclude Include="IOManager.h" />
     <ClInclude Include="mainGame.h" />
     <ClInclude Include="picopng.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TextureCache.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

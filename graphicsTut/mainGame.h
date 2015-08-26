@@ -6,7 +6,6 @@
 #include "sprite.h"
 #include "GLSLProgram.h"
 #include "GLTexture.h"
-#include "ImageLoader.h"
 
 #include <SDL.h>
 #include <glew.h>
@@ -36,7 +35,6 @@ private:
 	float m_time;
 	SDL_Window* m_window;
 	GameState m_gameState;
-	Sprite m_sprite;
-	GLTexture m_playerTexture;
+	std::vector<Sprite*> m_sprites;
 	GLSLProgram m_colorProgram;
 };
