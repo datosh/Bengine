@@ -6,7 +6,7 @@ MainGame::MainGame() :
 	m_screenHeight(768), 
 	m_window(nullptr), 
 	m_gameState(GameState::PLAY),
-	m_maxFPS(0),
+	m_maxFPS(40),
 	m_fps(0),
 	m_frameTime(0)
 {
@@ -35,6 +35,8 @@ void MainGame::initSystems()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
 	m_window = SDL_CreateWindow("Test Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
 		m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
 	if (!m_window)
@@ -55,9 +57,12 @@ void MainGame::initSystems()
 		fatalError("glewInit failed!");
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// Check OpenGL Version
+	std::printf("*** OpenGL Version: %s ***\n", glGetString(GL_VERSION));
 
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+
+	SDL_GL_SetSwapInterval(1);
 
 	initShaders();
 }
