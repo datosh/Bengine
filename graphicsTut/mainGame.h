@@ -30,9 +30,12 @@ private:
 	void gameLoop();
 	void processInput();
 	void drawGame();
+	void calculateFPS();
 
 	int m_screenWidth, m_screenHeight;
 	float m_time;
+	float m_fps, m_frameTime;
+	float m_maxFPS;
 	SDL_Window* m_window;
 	GameState m_gameState;
 	std::vector<Sprite*> m_sprites;

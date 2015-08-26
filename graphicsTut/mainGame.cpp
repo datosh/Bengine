@@ -1,6 +1,14 @@
 #include "mainGame.h"
 
-MainGame::MainGame() : m_time(0), m_screenWidth(1024), m_screenHeight(768), m_window(nullptr), m_gameState(GameState::PLAY)
+MainGame::MainGame() : 
+	m_time(0), 
+	m_screenWidth(1024),
+	m_screenHeight(768), 
+	m_window(nullptr), 
+	m_gameState(GameState::PLAY),
+	m_maxFPS(0),
+	m_fps(0),
+	m_frameTime(0)
 {
 }
 
@@ -67,11 +75,29 @@ void MainGame::gameLoop()
 {
 	while (m_gameState != GameState::EXIT)
 	{
+		float startTicks = static_cast<float>(SDL_GetTicks());
+
 		processInput();
 		drawGame();
-		m_time += 0.21f;
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		m_time += 0.12f;
+
+		calculateFPS();
+
+		// print only once every 10 frames
+		static int frameCounter = 0;
+		if (frameCounter++ == 10)
+		{
+			std::cout << m_fps << std::endl;
+			frameCounter = 0;
+		}
+
+		// Limit FPS to max FPS
+		float frameTicks = SDL_GetTicks() - startTicks;
+		if ((1000.0f / m_maxFPS) > frameTicks)
+		{
+			SDL_Delay(static_cast<Uint32>((1000.0f / m_maxFPS) - frameTicks));
+		}
 	}
 }
 
@@ -119,6 +145,47 @@ void MainGame::drawGame()
 
 	SDL_GL_SwapWindow(m_window);
 
+}
+
+void MainGame::calculateFPS()
+{
+	// Init once
+	static int currentFrame = 0;
+	static const int NUM_SAMPLES = 100;
+	static float frameTimes[NUM_SAMPLES];
+	static float prevTicks = static_cast<float>(SDL_GetTicks());
+	
+	// Get delta
+	float currentTicks = static_cast<float>(SDL_GetTicks());
+	m_frameTime = currentTicks - prevTicks;
+	frameTimes[currentFrame++ % NUM_SAMPLES] = m_frameTime;
+	prevTicks = currentTicks;
+
+	int count;
+	if (currentFrame < NUM_SAMPLES)
+	{
+		count = currentFrame;
+	}
+	else
+	{
+		count = NUM_SAMPLES;
+	}
+
+	float frameTimeAverage = 0;
+	for (auto time : frameTimes)
+	{
+		frameTimeAverage += time;
+	}
+	frameTimeAverage /= count;
+
+	if(frameTimeAverage > 0)
+	{
+		m_fps = 1000.0f / frameTimeAverage;
+	}
+	else
+	{
+		m_fps = 60.0f;
+	}
 }
 
 
