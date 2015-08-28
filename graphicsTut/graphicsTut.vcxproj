@@ -69,7 +69,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\;H:\lib\glew-1.13.0\include\GL;H:\lib\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>H:\lib\glm\glm;$(SolutionDir)\;H:\lib\glew-1.13.0\include\GL;H:\lib\SDL\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Debug\;H:\lib\glew-1.13.0\lib\Release\Win32;H:\lib\SDL\lib\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

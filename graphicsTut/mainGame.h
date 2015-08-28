@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 #include <glew.h>
+#include <glm.hpp>
 
 #include <Bengine\Bengine.h>
 #include <Bengine\Errors.h>
@@ -11,6 +12,7 @@
 #include <Bengine\GLSLProgram.h>
 #include <Bengine\GLTexture.h>
 #include <Bengine\Window.h>
+#include <Bengine\Camera2D.h>
 
 
 enum class GameState {
@@ -43,4 +45,5 @@ private:
 	GameState m_gameState;
 	std::vector<Bengine::Sprite*> m_sprites;
 	Bengine::GLSLProgram m_colorProgram;
+	Bengine::Camera2D m_camera;
 };

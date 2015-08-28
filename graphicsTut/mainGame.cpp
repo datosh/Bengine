@@ -9,6 +9,7 @@ MainGame::MainGame() :
 	m_fps(0),
 	m_frameTime(0)
 {
+	m_camera.init(m_screenWidth, m_screenHeight);
 }
 
 MainGame::~MainGame()
@@ -20,10 +21,10 @@ void MainGame::run()
 	initSystems();
 
 	m_sprites.push_back(new Bengine::Sprite());
-	m_sprites.back()->init(-1.0f, -1.0f, 1.0f, 1.0f, "Textures/PNG/CharacterRight_Standing.png");
+	m_sprites.back()->init(0.0f, 0.0f, m_screenWidth / 2.0f, m_screenHeight / 2.0f, "Textures/PNG/CharacterRight_Standing.png");
 
 	m_sprites.push_back(new Bengine::Sprite());
-	m_sprites.back()->init(0.0f, -1.0f, 1.0f, 1.0f, "Textures/PNG/CharacterRight_Standing.png");
+	m_sprites.back()->init(m_screenWidth / 2.0f, 0.0f, m_screenWidth / 2.0f, m_screenHeight / 2.0f, "Textures/PNG/CharacterRight_Standing.png");
 	
 	
 	gameLoop();
@@ -56,6 +57,7 @@ void MainGame::gameLoop()
 		float startTicks = static_cast<float>(SDL_GetTicks());
 
 		processInput();
+		m_camera.update();
 		drawGame();
 
 		m_time += 0.12f;
@@ -81,6 +83,9 @@ void MainGame::gameLoop()
 
 void MainGame::processInput()
 {
+	const float CAMERA_SPEED = 10.0f;
+	const float SCALE_SPEED = 0.1f;
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -91,6 +96,31 @@ void MainGame::processInput()
 			break;
 		case SDL_MOUSEMOTION:
 			//std::cout << event.motion.x << ":" << event.motion.y << std::endl;
+			break;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_w:
+				m_camera.setPositon(m_camera.getPosition() + glm::vec2(0.0f, -CAMERA_SPEED));
+				break;
+			case SDLK_s:
+				m_camera.setPositon(m_camera.getPosition() + glm::vec2(0.0f, CAMERA_SPEED));
+				break;
+			case SDLK_a:
+				m_camera.setPositon(m_camera.getPosition() + glm::vec2(CAMERA_SPEED, 0.0f));
+				break;
+			case SDLK_d:
+				m_camera.setPositon(m_camera.getPosition() + glm::vec2(-CAMERA_SPEED, 0.0f));
+				break;
+			case SDLK_q:
+				m_camera.setScale(m_camera.getScale() + SCALE_SPEED);
+				break;
+			case SDLK_e:
+				m_camera.setScale(m_camera.getScale() + -SCALE_SPEED);
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;
@@ -112,6 +142,10 @@ void MainGame::drawGame()
 
 	GLint timeLocation = m_colorProgram.getUniformLocation("time");
 	glUniform1f(timeLocation, m_time);
+
+	GLint pLocation = m_colorProgram.getUniformLocation("P");
+	glm::mat4 cameraMatrix = m_camera.getCameraMatrix();
+	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
 
 	for (auto sprite : m_sprites)
 	{
