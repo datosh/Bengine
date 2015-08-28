@@ -16,6 +16,8 @@ namespace Bengine {
 
 		void update();
 
+		glm::vec2 convertScreenToWorld(glm::vec2 screenCoords);
+
 		void setPositon(const glm::vec2& position) { m_position = position; m_needsMatrixUpdate = true; }
 		void setScale(float scale) { m_scale = scale; m_needsMatrixUpdate = true; }
 
