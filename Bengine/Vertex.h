@@ -3,21 +3,28 @@
 #include <glew.h>
 
 namespace Bengine {
+
+	struct Position {
+		float x;
+		float y;
+	};
+
+	struct Color {
+		GLubyte r;
+		GLubyte g;
+		GLubyte b;
+		GLubyte a;
+	};
+
+	struct UV {
+		float u;
+		float v;
+	};
+
 	struct Vertex {
-		struct Position {
-			float x;
-			float y;
-		} position;
-		struct Color {
-			GLubyte r;
-			GLubyte g;
-			GLubyte b;
-			GLubyte a;
-		} color;
-		struct UV {
-			float u;
-			float v;
-		} uv;
+		struct Position position;
+		struct Color color;
+		struct UV uv;
 
 		void setPosition(float x, float y) {
 			position.x = x;
