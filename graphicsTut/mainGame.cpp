@@ -19,14 +19,7 @@ MainGame::~MainGame()
 void MainGame::run()
 {
 	initSystems();
-
-	m_sprites.push_back(new Bengine::Sprite());
-	m_sprites.back()->init(0.0f, 0.0f, m_screenWidth / 2.0f, m_screenHeight / 2.0f, "Textures/PNG/CharacterRight_Standing.png");
-
-	m_sprites.push_back(new Bengine::Sprite());
-	m_sprites.back()->init(m_screenWidth / 2.0f, 0.0f, m_screenWidth / 2.0f, m_screenHeight / 2.0f, "Textures/PNG/CharacterRight_Standing.png");
-	
-	
+ 	
 	gameLoop();
 }
 
@@ -39,6 +32,8 @@ void MainGame::initSystems()
 	m_window.create("Game Engine", m_screenWidth, m_screenHeight, 0);
 
 	initShaders();
+
+	m_spriteBatch.init();
 }
 
 void MainGame::initShaders()
@@ -59,6 +54,12 @@ void MainGame::gameLoop()
 		processInput();
 		m_camera.update();
 		drawGame();
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR)
+		{
+			std::cout << "OpenGL error: " << err << std::endl;
+		}
 
 		m_time += 0.12f;
 
@@ -147,10 +148,18 @@ void MainGame::drawGame()
 	glm::mat4 cameraMatrix = m_camera.getCameraMatrix();
 	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
 
-	for (auto sprite : m_sprites)
-	{
-		sprite->draw();
-	}
+	m_spriteBatch.begin();
+
+	glm::vec4 pos(0.0f, 0.0f, 50.0f, 50.0f);
+	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
+	static Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/PNG/CharacterRight_Walk2.png");
+	Bengine::Color color = { 255, 255, 255, 255 };
+
+	m_spriteBatch.draw(pos, uv, texture.id, 0.0f, color);
+	m_spriteBatch.draw(pos + glm::vec4(50, 0, 0, 0), uv, texture.id, 0.0f, color);
+
+	m_spriteBatch.end();
+	m_spriteBatch.renderBatch();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	m_colorProgram.unuse();

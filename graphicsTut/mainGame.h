@@ -13,6 +13,7 @@
 #include <Bengine\GLTexture.h>
 #include <Bengine\Window.h>
 #include <Bengine\Camera2D.h>
+#include <Bengine\SpriteBatch.h>
 
 
 enum class GameState {
@@ -43,7 +44,7 @@ private:
 	float m_maxFPS;
 	Bengine::Window m_window;
 	GameState m_gameState;
-	std::vector<Bengine::Sprite*> m_sprites;
 	Bengine::GLSLProgram m_colorProgram;
 	Bengine::Camera2D m_camera;
+	Bengine::SpriteBatch m_spriteBatch;
 };
