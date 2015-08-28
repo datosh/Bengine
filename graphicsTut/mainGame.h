@@ -14,6 +14,8 @@
 #include <Bengine\Window.h>
 #include <Bengine\Camera2D.h>
 #include <Bengine\SpriteBatch.h>
+#include <Bengine\InputManager.h>
+#include <Bengine\Timing.h>
 
 
 enum class GameState {
@@ -36,15 +38,16 @@ private:
 	void gameLoop();
 	void processInput();
 	void drawGame();
-	void calculateFPS();
 
 	int m_screenWidth, m_screenHeight;
 	float m_time;
-	float m_fps, m_frameTime;
-	float m_maxFPS;
+	float m_fps, m_maxFPS;
+
 	Bengine::Window m_window;
 	GameState m_gameState;
 	Bengine::GLSLProgram m_colorProgram;
 	Bengine::Camera2D m_camera;
 	Bengine::SpriteBatch m_spriteBatch;
+	Bengine::InputManager m_inputManager;
+	Bengine::FPSLimiter m_fpsLimiter;
 };
