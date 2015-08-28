@@ -67,7 +67,7 @@ void MainGame::gameLoop()
 
 		// print only once every 10 frames
 		static int frameCounter = 0;
-		if (frameCounter++ == 10)
+		if (frameCounter++ == 10000)
 		{
 			std::cout << m_fps << std::endl;
 			frameCounter = 0;
@@ -89,7 +89,13 @@ void MainGame::processInput()
 			m_gameState = GameState::EXIT;
 			break;
 		case SDL_MOUSEMOTION:
-			//std::cout << event.motion.x << ":" << event.motion.y << std::endl;
+			m_inputManager.setMouseCoords(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y));
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			m_inputManager.pressKey(event.button.button);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			m_inputManager.releaseKey(event.button.button);
 			break;
 		case SDL_KEYDOWN:
 			m_inputManager.pressKey(event.key.keysym.sym);
@@ -126,6 +132,12 @@ void MainGame::processInput()
 	{
 		m_camera.setScale(m_camera.getScale() + -SCALE_SPEED);
 	}
+	if (m_inputManager.isKeyPressed(SDL_BUTTON_LEFT))
+	{
+		glm::vec2 mouseCoords = m_inputManager.getMouseCoords();
+		mouseCoords = m_camera.convertScreenToWorld(mouseCoords);
+		std::cout << mouseCoords.x << " " << mouseCoords.y << std::endl;
+	}
 }
 
 void MainGame::drawGame()
@@ -150,9 +162,7 @@ void MainGame::drawGame()
 	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
 	static Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/PNG/CharacterRight_Walk2.png");
 	Bengine::Color color = { 255, 255, 255, 255 };
-
 	m_spriteBatch.draw(pos, uv, texture.id, 0.0f, color);
-	m_spriteBatch.draw(pos + glm::vec4(50, 0, 0, 0), uv, texture.id, 0.0f, color);
 
 	m_spriteBatch.end();
 	m_spriteBatch.renderBatch();
