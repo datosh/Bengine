@@ -140,9 +140,6 @@ void MainGame::drawGame()
 	GLint textureLoaction = m_colorProgram.getUniformLocation("mySampler");
 	glUniform1i(textureLoaction, 0);
 
-	GLint timeLocation = m_colorProgram.getUniformLocation("time");
-	glUniform1f(timeLocation, m_time);
-
 	GLint pLocation = m_colorProgram.getUniformLocation("P");
 	glm::mat4 cameraMatrix = m_camera.getCameraMatrix();
 	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
