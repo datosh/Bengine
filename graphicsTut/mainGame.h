@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "Bullet.h"
 
 #include <SDL.h>
 #include <glew.h>
@@ -43,8 +44,11 @@ private:
 	float m_time;
 	float m_fps, m_maxFPS;
 
-	Bengine::Window m_window;
+	std::vector<Bullet> m_bullets;
+
 	GameState m_gameState;
+
+	Bengine::Window m_window;
 	Bengine::GLSLProgram m_colorProgram;
 	Bengine::Camera2D m_camera;
 	Bengine::SpriteBatch m_spriteBatch;

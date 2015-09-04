@@ -54,6 +54,20 @@ void MainGame::gameLoop()
 		processInput();
 		m_time += 0.12f;
 		m_camera.update();
+
+		for (size_t i = 0; i < m_bullets.size();)
+		{
+			if (m_bullets[i].update() == true)
+			{
+				m_bullets[i] = m_bullets.back();
+				m_bullets.pop_back();
+			}
+			else
+			{
+				i++;
+			}
+		}
+
 		drawGame();
 
 		// Check for potential errors
@@ -135,8 +149,13 @@ void MainGame::processInput()
 	if (m_inputManager.isKeyPressed(SDL_BUTTON_LEFT))
 	{
 		glm::vec2 mouseCoords = m_inputManager.getMouseCoords();
-		mouseCoords = m_camera.convertScreenToWorld(mouseCoords);
-		std::cout << mouseCoords.x << " " << mouseCoords.y << std::endl;
+		glm::vec2 worldCoords = m_camera.convertScreenToWorld(mouseCoords);
+
+		glm::vec2 playerPositon(0.0f);
+		glm::vec2 direction = worldCoords - playerPositon;
+		direction = glm::normalize(direction);
+
+		m_bullets.emplace_back(playerPositon, direction, 7.0f, 1000);
 	}
 }
 
@@ -163,6 +182,11 @@ void MainGame::drawGame()
 	static Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/PNG/CharacterRight_Walk2.png");
 	Bengine::Color color = { 255, 255, 255, 255 };
 	m_spriteBatch.draw(pos, uv, texture.id, 0.0f, color);
+
+	for (auto bullet : m_bullets)
+	{
+		bullet.draw(m_spriteBatch);
+	}
 
 	m_spriteBatch.end();
 	m_spriteBatch.renderBatch();
