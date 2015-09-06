@@ -13,6 +13,8 @@ Zombie::~Zombie()
 
 bool Zombie::moveRel(glm::vec2 delta)
 {
+	m_pos += delta;
+
 	return false;
 }
 
@@ -31,6 +33,19 @@ void Zombie::draw(Bengine::SpriteBatch & spriteBatch)
 
 bool Zombie::update()
 {
+	m_dir = glm::normalize(m_toFollow->getPos() - m_pos);
 	moveRel(m_dir * m_speed);
+
 	return false;
+}
+
+void Zombie::follow(Player * entity)
+{
+	m_toFollow = entity;
+	m_hasTarget = true;
+}
+
+bool Zombie::hasTarget()
+{
+	return m_hasTarget;
 }

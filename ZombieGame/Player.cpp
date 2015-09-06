@@ -6,6 +6,10 @@ Player::Player(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::C
 	
 }
 
+Player::Player() : Entity()
+{
+}
+
 Player::~Player()
 {
 }

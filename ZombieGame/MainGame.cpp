@@ -2,8 +2,8 @@
 
 MainGame::MainGame() :
 	m_time(0),
-	m_screenWidth(1024),
-	m_screenHeight(768),
+	m_screenWidth(800),
+	m_screenHeight(600),
 	m_gameState(GameState::PLAY),
 	m_maxFPS(40),
 	m_fps(0)
@@ -28,6 +28,7 @@ MainGame::MainGame() :
 		glm::vec2 zombiePos(widthDis(gen), heightDis(gen));
 		glm::vec2 zombieDir(dirDis(gen), dirDis(gen));
 		m_zombies.emplace_back(zombiePos, zombieDir, CAMERA_SPEED * 0.7f, 10.0f, zombieColor);
+		m_zombies.back().follow(m_player);
 	}
 }
 
@@ -195,7 +196,7 @@ void MainGame::tick()
 {
 	m_player->update();
 
-	for (auto zombie : m_zombies)
+	for (auto & zombie : m_zombies)
 	{
 		zombie.update();
 		if (zombie.overlaps(*m_player))
@@ -203,6 +204,8 @@ void MainGame::tick()
 			std::cout << "COLLISION" << std::endl;
 		}
 	}
+
+	std::cout << m_zombies[0].getPos().x << m_zombies[0].getPos().y << std::endl;
 }
 
 void MainGame::draw()

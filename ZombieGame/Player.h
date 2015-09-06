@@ -12,6 +12,7 @@ class Player : public Entity
 {
 public:
 	Player(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color);
+	Player();
 	~Player();
 
 	bool moveRel(glm::vec2 delta);

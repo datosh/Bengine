@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "Entity.h"
+#include "Player.h"
 
 class Zombie : public Entity
 {
@@ -13,5 +14,12 @@ public:
 	bool moveAbs(glm::vec2 pos);
 	void draw(Bengine::SpriteBatch& spriteBatch);
 	bool update();
+
+	void follow(Player * entity);
+	bool hasTarget();
+
+private:
+	bool m_hasTarget;
+	Player * m_toFollow;
 };
 

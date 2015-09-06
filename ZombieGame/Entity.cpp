@@ -4,6 +4,11 @@
 
 Entity::Entity()
 {
+	m_pos = { 0.0f, 0.0f };
+	m_dir = { 0.0f, 0.0f };
+	m_speed = 0.0f;
+	m_size = 0.0f;
+	m_color = { 0, 0, 0 };
 }
 
 Entity::Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color) :

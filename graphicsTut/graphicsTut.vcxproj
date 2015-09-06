@@ -69,8 +69,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>H:\lib\glm\glm;$(SolutionDir)\;H:\lib\glew-1.13.0\include\GL;H:\lib\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Debug\;H:\lib\glew-1.13.0\lib\Release\Win32;H:\lib\SDL\lib\win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\glew\;$(SolutionDir);$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Debug\;$(SolutionDir)\lib\glew\;$(SolutionDir)\lib\SDL\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>D:\git\Bengine;D:\git\lib\glew-1.13.0\include\GL;D:\git\lib\glm\glm;D:\git\lib\SDL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\git\Bengine\x64\Debug;D:\git\lib\glew-1.13.0\lib\Release\Win32;D:\git\lib\glm\glm;D:\git\lib\SDL\lib\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,9 +94,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Bengine.lib;glew32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
