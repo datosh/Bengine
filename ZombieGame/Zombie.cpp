@@ -1,6 +1,10 @@
 #include "Zombie.h"
 
 
+Zombie::Zombie() : Entity()
+{
+}
+
 Zombie::Zombie(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color) :
 	Entity(pos, dir, speed, size, color)
 {

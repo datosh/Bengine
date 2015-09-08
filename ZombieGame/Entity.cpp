@@ -9,6 +9,7 @@ Entity::Entity()
 	m_speed = 0.0f;
 	m_size = 0.0f;
 	m_color = { 0, 0, 0 };
+	m_alive = false;
 }
 
 Entity::Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color) :
@@ -18,7 +19,7 @@ Entity::Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::C
 	m_size(size),
 	m_color(color)
 {
-
+	m_alive = true;
 }
 
 Entity::~Entity()
@@ -39,4 +40,14 @@ bool Entity::overlaps(Entity & entity)
 	float BY = otherPos.y + entity.getSize();
 
 	return !(AX < Bx || BX < Ax || AY < By || BY < Ay);
+}
+
+void Entity::die()
+{
+	m_alive = false;
+}
+
+bool Entity::alive()
+{
+	return m_alive;
 }

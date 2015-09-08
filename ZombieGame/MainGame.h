@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Player.h"
 #include "Zombie.h"
+#include "Bullet.h"
 
 #include <SDL.h>
 #include <glew.h>
@@ -41,6 +42,8 @@ private:
 	void gameLoop();
 	void processInput();
 	void drawGame();
+	
+	void clearDead(std::vector<Entity> entityList);
 	void tick();
 	void draw();
 
@@ -62,4 +65,5 @@ private:
 
 	Player* m_player;
 	std::vector<Zombie> m_zombies;
+	std::vector<Bullet> m_bullets;
 };

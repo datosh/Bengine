@@ -153,15 +153,28 @@ void MainGame::processInput()
 	if (m_inputManager.isKeyPressed(SDLK_e))
 	{
 	}
-	if (m_inputManager.isKeyPressed(SDL_BUTTON_LEFT))
+	if (m_inputManager.isKeyPressed(SDL_BUTTON_LEFT) ||
+		m_inputManager.isKeyPressed(SDLK_SPACE))
 	{
-		glm::vec2 mouseCoords = m_inputManager.getMouseCoords();
-		glm::vec2 worldCoords = m_camera.convertScreenToWorld(mouseCoords);
+		static Uint32 lastBullet = SDL_GetTicks();
+		const Uint32 bulletDelay = 500;
 
-		glm::vec2 playerPositon(0.0f);
-		glm::vec2 direction = worldCoords - playerPositon;
-		direction = glm::normalize(direction);
+		if (SDL_GetTicks() - lastBullet > 500)
+		{
+			lastBullet = SDL_GetTicks();
 
+			glm::vec2 mouseCoords = m_inputManager.getMouseCoords();
+			glm::vec2 worldCoords = m_camera.convertScreenToWorld(mouseCoords);
+
+			glm::vec2 playerPositon = m_player->getPos();
+			glm::vec2 direction = worldCoords - playerPositon;
+			direction = glm::normalize(direction);
+
+			Bengine::Color bulletColor = { 52, 52, 52, 255 };
+
+			m_bullets.emplace_back(playerPositon, direction, 1.7f * CAMERA_SPEED, 3.0f, bulletColor);
+		}
+		
 	}
 }
 
@@ -205,7 +218,25 @@ void MainGame::tick()
 		}
 	}
 
-	std::cout << m_zombies[0].getPos().x << m_zombies[0].getPos().y << std::endl;
+	for (auto & bullet : m_bullets)
+	{
+		bullet.update();
+		
+		for (auto & zombie : m_zombies)
+		{
+			if (bullet.alive() && zombie.alive() && bullet.overlaps(zombie))
+			{
+				zombie.die();
+				bullet.die();
+			}
+		}
+	}
+
+	std::cout << m_bullets.size() << std::endl;
+
+	// Get rid of dead entities
+	m_bullets.erase(std::remove_if(m_bullets.begin(), m_bullets.end(), [](Bullet b) {return !b.alive();}), m_bullets.end());
+	m_zombies.erase(std::remove_if(m_zombies.begin(), m_zombies.end(), [](Zombie z) {return !z.alive();}), m_zombies.end());
 }
 
 void MainGame::draw()
@@ -215,7 +246,11 @@ void MainGame::draw()
 	for (auto zombie : m_zombies)
 	{
 		zombie.draw(m_spriteBatch);
+	}
 
+	for (auto bullet : m_bullets)
+	{
+		bullet.draw(m_spriteBatch);
 	}
 }
 

@@ -28,6 +28,7 @@ public:
 	void setPos(glm::vec2 pos) { m_pos = pos; }
 	void setDir(glm::vec2 dir) { m_dir = dir; }
 	void setColor(Bengine::Color color) { m_color = color; }
+	void die();
 
 	// Getter
 	float getSpeed() { return m_speed; }
@@ -35,10 +36,13 @@ public:
 	glm::vec2 getPos() { return m_pos; }
 	glm::vec2 getDir() { return m_dir; }
 	Bengine::Color getColor() { return m_color; }
+	bool alive();
 
 protected:
 	float m_speed, m_size;
 	glm::vec2 m_pos, m_dir;
 	Bengine::Color m_color;
+
+	bool m_alive;
 };
 

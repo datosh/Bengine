@@ -7,6 +7,7 @@
 class Zombie : public Entity
 {
 public:
+	Zombie();
 	Zombie(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color);
 	~Zombie();
 
