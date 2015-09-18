@@ -172,7 +172,7 @@ void MainGame::processInput()
 
 			Bengine::Color bulletColor = { 52, 52, 52, 255 };
 
-			m_bullets.emplace_back(playerPositon, direction, 1.7f * CAMERA_SPEED, 3.0f, bulletColor);
+			m_bullets.entities.emplace_back(playerPositon, direction, 1.7f * CAMERA_SPEED, 5.0f, bulletColor);
 		}
 		
 	}
@@ -232,10 +232,9 @@ void MainGame::tick()
 		}
 	}
 
-	std::cout << m_bullets.size() << std::endl;
-
 	// Get rid of dead entities
-	m_bullets.erase(std::remove_if(m_bullets.begin(), m_bullets.end(), [](Bullet b) {return !b.alive();}), m_bullets.end());
+	m_bullets.deleteDead();
+	// m_bullets.erase(std::remove_if(m_bullets.begin(), m_bullets.end(), [](Bullet b) {return !b.alive();}), m_bullets.end());
 	m_zombies.erase(std::remove_if(m_zombies.begin(), m_zombies.end(), [](Zombie z) {return !z.alive();}), m_zombies.end());
 }
 
@@ -248,10 +247,7 @@ void MainGame::draw()
 		zombie.draw(m_spriteBatch);
 	}
 
-	for (auto bullet : m_bullets)
-	{
-		bullet.draw(m_spriteBatch);
-	}
+	m_bullets.drawAll(m_spriteBatch);
 }
 
 

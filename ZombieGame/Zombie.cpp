@@ -37,7 +37,23 @@ void Zombie::draw(Bengine::SpriteBatch & spriteBatch)
 
 bool Zombie::update()
 {
-	m_dir = glm::normalize(m_toFollow->getPos() - m_pos);
+	static const float DIST_THRESH = 150;
+
+	glm::vec2 dist_vec = m_toFollow->getPos() - m_pos;
+	float distance = glm::length(dist_vec);
+
+	if (distance > DIST_THRESH)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dirDis(-1, 1);
+		m_dir = { dirDis(gen), dirDis(gen) };
+	}
+	else
+	{
+		m_dir = glm::normalize(m_toFollow->getPos() - m_pos);
+	}
+
 	moveRel(m_dir * m_speed);
 
 	return false;

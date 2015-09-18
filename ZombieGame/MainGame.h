@@ -3,6 +3,7 @@
 #include "stdafx.h"
 
 #include "Entity.h"
+#include "EntityList.h"
 #include "Player.h"
 #include "Zombie.h"
 #include "Bullet.h"
@@ -43,7 +44,6 @@ private:
 	void processInput();
 	void drawGame();
 	
-	void clearDead(std::vector<Entity> entityList);
 	void tick();
 	void draw();
 
@@ -65,5 +65,6 @@ private:
 
 	Player* m_player;
 	std::vector<Zombie> m_zombies;
-	std::vector<Bullet> m_bullets;
+	// std::vector<Bullet> m_bullets;
+	EntityList<Bullet> m_bullets;
 };
