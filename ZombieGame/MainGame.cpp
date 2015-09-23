@@ -100,7 +100,10 @@ void MainGame::initShaders() {
 void MainGame::gameLoop() {
 	
 	Bengine::FPSLimiter fpsLimiter;
-	fpsLimiter.setMaxFPS(60.0f);
+	fpsLimiter.setMaxFPS(6000.0f);
+
+	const float CAMERA_SCALE = 1.0f / 4.0f;
+	m_camera.setScale(CAMERA_SCALE);
 
 	while (m_gameState == GameState::PLAY)
 	{
@@ -118,6 +121,7 @@ void MainGame::gameLoop() {
 		drawGame();
 
 		m_fps = fpsLimiter.end();
+		std::cout << m_fps << std::endl;
 	}
 
 }

@@ -65,8 +65,8 @@ bool Bullet::collideWithWorld(const std::vector<std::string>& levelData)
 {
 	glm::ivec2 gridPostion;
 
-	gridPostion.x = floor(m_position.x / (float)TILE_WIDTH);
-	gridPostion.y = floor(m_position.y / (float)TILE_WIDTH);
+	gridPostion.x = static_cast<int>(floor(m_position.x / TILE_WIDTH));
+	gridPostion.y = static_cast<int>(floor(m_position.y / TILE_WIDTH));
 
 	if (gridPostion.x < 0 || gridPostion.x >= levelData[0].length() ||
 		gridPostion.y < 0 || gridPostion.y >= levelData.size())

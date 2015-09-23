@@ -16,7 +16,7 @@ Agent::~Agent()
 void Agent::draw(Bengine::SpriteBatch & spriteBatch)
 {
 	static int textureID = Bengine::ResourceManager::getTexture("Textures/circle.png").id;
-	const glm::vec4 uvRect(0.0f, 0.0f, 0.0f, 1.0f);
+	const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
 	glm::vec4 destRect(m_position.x, m_position.y, AGENT_WIDTH, AGENT_WIDTH);
 	spriteBatch.draw(destRect, uvRect, textureID, 0.0f, m_color);
 }
@@ -100,7 +100,7 @@ void Agent::checkTilePosition(const std::vector<std::string>& levelData,
 		return;
 	}
 
-	if (levelData[cornerPos.y][cornerPos.x] != '.')
+	if (levelData[static_cast<int>(cornerPos.y)][static_cast<int>(cornerPos.x)] != '.')
 	{
 		collideTilePositions.push_back(cornerPos * (float)TILE_WIDTH + glm::vec2((float)(TILE_WIDTH / 2)));
 	}
