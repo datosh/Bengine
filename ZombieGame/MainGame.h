@@ -1,32 +1,23 @@
 #pragma once
 
-#include "stdafx.h"
+#include <Bengine/Window.h>
+#include <Bengine/GLSLProgram.h>
+#include <Bengine/Camera2D.h>
+#include <Bengine/InputManager.h>
+#include <Bengine/SpriteBatch.h>
 
-#include "Entity.h"
-#include "EntityList.h"
 #include "Player.h"
+#include "Level.h"
 #include "Zombie.h"
-#include "Bullet.h"
+#include "Gun.h"
 
-#include <SDL.h>
-#include <glew.h>
-#include <glm.hpp>
-
-#include <Bengine\Bengine.h>
-#include <Bengine\Errors.h>
-#include <Bengine\sprite.h>
-#include <Bengine\GLSLProgram.h>
-#include <Bengine\GLTexture.h>
-#include <Bengine\Window.h>
-#include <Bengine\Camera2D.h>
-#include <Bengine\SpriteBatch.h>
-#include <Bengine\InputManager.h>
-#include <Bengine\Timing.h>
-
+const float HUMAN_SPEED = 1.0f;
+const float ZOMBIE_SPEED = 1.3f;
+const float PLAYER_SPEED = 5.0f;
 
 enum class GameState {
 	PLAY,
-	EXIT,
+	EXIT
 };
 
 class MainGame
@@ -35,36 +26,53 @@ public:
 	MainGame();
 	~MainGame();
 
+	/// Runs the game
 	void run();
 
 private:
+	/// Initializes the core systems
 	void initSystems();
-	void initShaders();
-	void gameLoop();
-	void processInput();
-	void drawGame();
-	
-	void tick();
-	void draw();
+	void initLevel();
 
-	const float CAMERA_SPEED = 3.0f;
-	const float SCALE_SPEED = 0.1f;
+	/// Initializes the shaders
+	void initShaders();
+
+	/// Main game loop for the program
+	void gameLoop();
+
+	void updateAgents();
+	void updateBullets();
+
+	/// Handles input processing
+	void processInput();
+
+	/// Renders the game
+	void drawGame();
+
+	/// Member Variables
+	Bengine::Window m_window; ///< The game window
+
+	Bengine::GLSLProgram m_textureProgram; ///< The shader program
+
+	Bengine::InputManager m_inputManager; ///< Handles input
+
+	Bengine::Camera2D m_camera; ///< Main Camera
+
+	Bengine::SpriteBatch m_agentSpriteBatch;
+
+	std::vector<Level*> m_levels; ///< Vector of all levels
 
 	int m_screenWidth, m_screenHeight;
-	float m_time;
-	float m_fps, m_maxFPS;
 
-	GameState m_gameState;
+	float m_fps;
 
-	Bengine::Window m_window;
-	Bengine::GLSLProgram m_colorProgram;
-	Bengine::Camera2D m_camera;
-	Bengine::SpriteBatch m_spriteBatch;
-	Bengine::InputManager m_inputManager;
-	Bengine::FPSLimiter m_fpsLimiter;
+	int m_currentLevel;
 
 	Player* m_player;
-	std::vector<Zombie> m_zombies;
-	// std::vector<Bullet> m_bullets;
-	EntityList<Bullet> m_bullets;
+	std::vector<Human*> m_humans;
+	std::vector<Zombie*> m_zombies;
+	std::vector<Bullet> m_bullets;
+
+	GameState m_gameState;
 };
+

@@ -1,8 +1,6 @@
-#include "stdafx.h"
-#include "mainGame.h"
+#include "MainGame.h"
 
 int main(int argc, char** argv) {
-
 	MainGame mainGame;
 	mainGame.run();
 

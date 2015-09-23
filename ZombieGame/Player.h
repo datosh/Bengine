@@ -1,26 +1,35 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Entity.h"
+#include "Human.h"
+#include "Bullet.h"
+#include <Bengine\InputManager.h>
+#include <Bengine\Camera2D.h>
 
-#include <glm.hpp>
-#include <Bengine\SpriteBatch.h>
-#include <Bengine\ResourceManager.h>
-#include <Bengine\Vertex.h>
 
-class Player : public Entity
+class Gun;
+
+class Player : public Human
 {
 public:
-	Player(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color);
 	Player();
 	~Player();
 
-	bool moveRel(glm::vec2 delta);
-	bool moveAbs(glm::vec2 pos);
-	void draw(Bengine::SpriteBatch& spriteBatch);
-	bool update();
+	virtual void update(const std::vector<std::string>& levelData,
+		std::vector<Human*>& humans,
+		std::vector<Zombie*>& zombies);
+
+	void addGun(Gun* gun);
+
+	void init(float speed, glm::vec2 position, 
+		Bengine::InputManager* inputManager,
+		Bengine::Camera2D* camera,
+		std::vector<Bullet>* bullets);
 
 private:
-	float m_life;
+	Bengine::InputManager* m_inputManager;
+	Bengine::Camera2D* m_camera;
+	std::vector<Gun*> m_guns;
+	std::vector<Bullet>* m_bullets;
+	int m_currentGunIndex;
 };
 

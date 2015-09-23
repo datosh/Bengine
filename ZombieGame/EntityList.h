@@ -61,8 +61,7 @@ template<typename T>
 inline T* EntityList<T>::getClosest(Zombie entity)
 {
 	T* clostest;
-	//TODO: Change to max float
-	float distance = 999999.0f;
+	float distance = FLT_MAX;
 
 	for (T e : entities)
 	{

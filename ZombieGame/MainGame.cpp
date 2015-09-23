@@ -1,254 +1,307 @@
-#include "mainGame.h"
+#include "MainGame.h"
+
+#include <Bengine/Bengine.h>
+#include <Bengine/Timing.h>
+
+#include <SDL.h>
+#include <iostream>
 
 MainGame::MainGame() :
-	m_time(0),
-	m_screenWidth(800),
-	m_screenHeight(600),
-	m_gameState(GameState::PLAY),
-	m_maxFPS(40),
-	m_fps(0)
+	m_screenWidth(1024),
+	m_screenHeight(768),
+	m_fps(0),
+	m_player(nullptr)
 {
-	m_camera.init(m_screenWidth, m_screenHeight);
+	m_gameState = GameState::PLAY;
+}
 
-	// Create Player
-	glm::vec2 playerPos(0.0f);
-	glm::vec2 playerDir(0.0f);
-	Bengine::Color playerColor = { 255, 0, 0, 255 };
-	m_player = new Player(playerPos, playerDir, CAMERA_SPEED, 15.0f, playerColor);
-
-	// Create Zombies
-	Bengine::Color zombieColor = { 0, 255, 0, 255 };
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> widthDis(-m_screenWidth / 2, m_screenWidth / 2);
-	std::uniform_real_distribution<> heightDis(-m_screenHeight / 2, m_screenHeight / 2);
-	std::uniform_real_distribution<> dirDis(0, 1);
-	for (auto i = 0; i < 10; ++i)
+MainGame::~MainGame() {
+	for (auto l : m_levels)
 	{
-		glm::vec2 zombiePos(widthDis(gen), heightDis(gen));
-		glm::vec2 zombieDir(dirDis(gen), dirDis(gen));
-		m_zombies.emplace_back(zombiePos, zombieDir, CAMERA_SPEED * 0.7f, 10.0f, zombieColor);
-		m_zombies.back().follow(m_player);
+		delete l;
+	}
+	for (auto h : m_humans)
+	{
+		delete h;
+	}
+	for (auto z : m_zombies)
+	{
+		delete z;
 	}
 }
 
-MainGame::~MainGame()
-{
-}
-
-void MainGame::run()
-{
+void MainGame::run() {
 	initSystems();
+	initLevel();
 
 	gameLoop();
 }
 
-void MainGame::initSystems()
-{
+void MainGame::initSystems() {
 	Bengine::init();
 
 	m_window.create("Zombie Game", m_screenWidth, m_screenHeight, 0);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
 	initShaders();
 
-	m_spriteBatch.init();
-	m_fpsLimiter.init(m_maxFPS);
+	m_agentSpriteBatch.init();
+
+	m_camera.init(m_screenWidth, m_screenHeight);
 }
 
-void MainGame::initShaders()
+void MainGame::initLevel()
 {
-	m_colorProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
-	m_colorProgram.addAttribute("vertexPosition");
-	m_colorProgram.addAttribute("vertexColor");
-	m_colorProgram.addAttribute("vertexUV");
-	m_colorProgram.linkShaders();
-}
+	m_levels.push_back(new Level("Levels/level1.txt"));
+	m_currentLevel = 0;
 
-void MainGame::gameLoop()
-{
-	while (m_gameState != GameState::EXIT)
+	m_player = new Player();
+	m_player->init(PLAYER_SPEED, m_levels[m_currentLevel]->getStartPlayerPos(), &m_inputManager, &m_camera, &m_bullets);
+
+	m_humans.push_back(m_player);
+
+	// Generate random humans
+	std::mt19937 randomEngine(time(nullptr));
+	std::uniform_int_distribution<int> randX(2, m_levels[m_currentLevel]->getWidth() - 2);
+	std::uniform_int_distribution<int> randY(2, m_levels[m_currentLevel]->getHeight() - 2);
+
+
+	for (int i = 0; i < m_levels[m_currentLevel]->getNumHumans(); ++i)
 	{
-		// Start new frame
-		m_fpsLimiter.begin();
+		m_humans.push_back(new Human);
+		glm::vec2 pos(randX(randomEngine) * TILE_WIDTH, randY(randomEngine) * TILE_WIDTH);
+		m_humans.back()->init(HUMAN_SPEED, pos);
+	}
 
-		// Do a tick
+	// Generate zombies
+	const std::vector<glm::vec2>& zombiePosition = m_levels[m_currentLevel]->getZombieStartPos();
+	for (int i = 0; i < zombiePosition.size(); ++i)
+	{
+		m_zombies.push_back(new Zombie);
+		m_zombies.back()->init(ZOMBIE_SPEED, zombiePosition[i]);
+	}
+
+	// Set up the players guns
+	const float BULLET_SPEED = 10.0f;
+	m_player->addGun(new Gun("Magnum", 30, 1, .05f, 30, BULLET_SPEED));
+	m_player->addGun(new Gun("Shotgun", 60, 20, .4f, 3, BULLET_SPEED));
+	m_player->addGun(new Gun("MP5", 5, 1, .1f, 12, BULLET_SPEED));
+}
+
+void MainGame::initShaders() {
+	// Compile our color shader
+	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
+	m_textureProgram.addAttribute("vertexPosition");
+	m_textureProgram.addAttribute("vertexColor");
+	m_textureProgram.addAttribute("vertexUV");
+	m_textureProgram.linkShaders();
+}
+
+void MainGame::gameLoop() {
+	
+	Bengine::FPSLimiter fpsLimiter;
+	fpsLimiter.setMaxFPS(60.0f);
+
+	while (m_gameState == GameState::PLAY)
+	{
+		fpsLimiter.begin();
+
 		processInput();
+
+		updateAgents();
+
+		updateBullets();
+
+		m_camera.setPositon(m_player->getPosition());
 		m_camera.update();
-		tick();
+
 		drawGame();
 
-		// Check for potential errors
-		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR)
+		m_fps = fpsLimiter.end();
+	}
+
+}
+
+void MainGame::updateAgents()
+{
+	// Update all the humans
+	for (auto h : m_humans)
+	{
+		h->update(m_levels[m_currentLevel]->getLevelData(),
+			m_humans, m_zombies);
+	}
+
+	// Update all the zombie
+	for (auto z : m_zombies)
+	{
+		z->update(m_levels[m_currentLevel]->getLevelData(),
+			m_humans, m_zombies);
+	}
+
+	for (int i = 0; i < m_zombies.size(); ++i)
+	{
+		// Collide with other zombies and push them back
+		for (int j = i + 1; j < m_zombies.size(); ++j)
 		{
-			std::cout << "OpenGL error: " << err << std::endl;
+			m_zombies[i]->collideWithAgent(m_zombies[j]);
 		}
 
-		m_fps = m_fpsLimiter.end();
-
-		// print only once every 10 frames
-		static int frameCounter = 0;
-		if (frameCounter++ == 10000)
+		// Collide with humans, and turn them into zombies
+		// START AT 1, 0 IS THE PLAYER
+		for (int j = 1; j < m_humans.size(); ++j)
 		{
-			std::cout << m_fps << std::endl;
-			frameCounter = 0;
+			if (m_zombies[i]->collideWithAgent(m_humans[j]))
+			{
+				// Add the new zombie
+				m_zombies.push_back(new Zombie);
+				m_zombies.back()->init(ZOMBIE_SPEED, m_humans[j]->getPosition());
+				// Delete the human
+				delete m_humans[j];
+				m_humans[j] = m_humans.back();
+				m_humans.pop_back();
+			}
+		}
+
+		// Collide with player
+		if (m_zombies[i]->collideWithAgent(m_player))
+		{
+			Bengine::fatalError("YOU LOSE");
+		}
+	}
+
+	// Update collisions
+	for (int i = 0; i < m_humans.size(); ++i)
+	{
+		for (int j = i + 1; j < m_humans.size(); ++j)
+		{
+			m_humans[i]->collideWithAgent(m_humans[j]);
 		}
 	}
 }
 
-
-void MainGame::processInput()
+// TODO: Collide Bullets with humans and win condition + stats
+void MainGame::updateBullets()
 {
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
+	// Update and collide with world
+	for (int i = 0; i < m_bullets.size(); )
 	{
-		switch (event.type)
+		// Does bullet collide with a wall?
+		if (m_bullets[i].update(m_levels[m_currentLevel]->getLevelData()))
 		{
+			m_bullets[i] = m_bullets.back();
+			m_bullets.pop_back();
+		}
+		else
+		{
+			++i;
+		}
+	}
+
+	// Collide with humans
+	for (int i = 0; i < m_bullets.size(); ++i)
+	{
+		for (int j = 0; j < m_zombies.size();)
+		{
+			// Check collosion
+			if (m_bullets[i].collideWithAgent(m_zombies[j]))
+			{
+				// Damage zombie
+				if (m_zombies[j]->applyDamage(m_bullets[i].getDamage()))
+				{
+					delete m_zombies[j];
+					m_zombies[j] = m_zombies.back();
+					m_zombies.pop_back();
+				}
+				else
+				{
+					++j;
+				}
+
+				// Remove bullet
+				m_bullets[i] = m_bullets.back();
+				m_bullets.pop_back();
+				i--;
+				// Since bullet died
+				break;
+			}
+			else
+			{
+				++j;
+			}
+		}
+		++i;
+	}
+}
+
+void MainGame::processInput() {
+	SDL_Event evnt;
+	//Will keep looping until there are no more events to process
+	while (SDL_PollEvent(&evnt)) {
+		switch (evnt.type) {
 		case SDL_QUIT:
 			m_gameState = GameState::EXIT;
 			break;
 		case SDL_MOUSEMOTION:
-			m_inputManager.setMouseCoords(static_cast<float>(event.motion.x), static_cast<float>(event.motion.y));
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			m_inputManager.pressKey(event.button.button);
-			break;
-		case SDL_MOUSEBUTTONUP:
-			m_inputManager.releaseKey(event.button.button);
+			m_inputManager.setMouseCoords(evnt.motion.x, evnt.motion.y);
 			break;
 		case SDL_KEYDOWN:
-			m_inputManager.pressKey(event.key.keysym.sym);
+			m_inputManager.pressKey(evnt.key.keysym.sym);
 			break;
 		case SDL_KEYUP:
-			m_inputManager.releaseKey(event.key.keysym.sym);
+			m_inputManager.releaseKey(evnt.key.keysym.sym);
 			break;
-		default:
+		case SDL_MOUSEBUTTONDOWN:
+			m_inputManager.pressKey(evnt.button.button);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			m_inputManager.releaseKey(evnt.button.button);
 			break;
 		}
-	}
-
-	if (m_inputManager.isKeyPressed(SDLK_w))
-	{
-		glm::vec2 delta(0.0f, CAMERA_SPEED);
-		m_player->moveRel(delta);
-	}
-	if (m_inputManager.isKeyPressed(SDLK_s))
-	{
-		glm::vec2 delta(0.0f, -CAMERA_SPEED);
-		m_player->moveRel(delta);
-	}
-	if (m_inputManager.isKeyPressed(SDLK_a))
-	{
-		glm::vec2 delta(-CAMERA_SPEED, 0.0f);
-		m_player->moveRel(delta);
-	}
-	if (m_inputManager.isKeyPressed(SDLK_d))
-	{
-		glm::vec2 delta(CAMERA_SPEED, 0.0f);
-		m_player->moveRel(delta);
-	}
-	if (m_inputManager.isKeyPressed(SDLK_q))
-	{
-	}
-	if (m_inputManager.isKeyPressed(SDLK_e))
-	{
-	}
-	if (m_inputManager.isKeyPressed(SDL_BUTTON_LEFT) ||
-		m_inputManager.isKeyPressed(SDLK_SPACE))
-	{
-		static Uint32 lastBullet = SDL_GetTicks();
-		const Uint32 bulletDelay = 500;
-
-		if (SDL_GetTicks() - lastBullet > 500)
-		{
-			lastBullet = SDL_GetTicks();
-
-			glm::vec2 mouseCoords = m_inputManager.getMouseCoords();
-			glm::vec2 worldCoords = m_camera.convertScreenToWorld(mouseCoords);
-
-			glm::vec2 playerPositon = m_player->getPos();
-			glm::vec2 direction = worldCoords - playerPositon;
-			direction = glm::normalize(direction);
-
-			Bengine::Color bulletColor = { 52, 52, 52, 255 };
-
-			m_bullets.entities.emplace_back(playerPositon, direction, 1.7f * CAMERA_SPEED, 5.0f, bulletColor);
-		}
-		
 	}
 }
 
-void MainGame::drawGame()
-{
+void MainGame::drawGame() {
+	// Set the base depth to 1.0
 	glClearDepth(1.0);
+	// Clear the color and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_colorProgram.use();
+	m_textureProgram.use();
+
 	glActiveTexture(GL_TEXTURE0);
 
-	GLint textureLoaction = m_colorProgram.getUniformLocation("mySampler");
-	glUniform1i(textureLoaction, 0);
+	// Make sure the texture uses texture 0
+	GLint textureUniform = m_textureProgram.getUniformLocation("mySampler");
+	glUniform1i(textureUniform, 0);
 
-	GLint pLocation = m_colorProgram.getUniformLocation("P");
-	glm::mat4 cameraMatrix = m_camera.getCameraMatrix();
-	glUniformMatrix4fv(pLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
+	glm::mat4 projectionMatrix = m_camera.getCameraMatrix();
+	GLint pUniform = m_textureProgram.getUniformLocation("P");
+	glUniformMatrix4fv(pUniform, 1, GL_FALSE, &projectionMatrix[0][0]);
 
-	// Draw all sprites via batch
-	m_spriteBatch.begin();
-	draw();
-	m_spriteBatch.end();
-	m_spriteBatch.renderBatch();
+	// Draw the level
+	m_levels[m_currentLevel]->draw();
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	m_colorProgram.unuse();
+	// Draw the humans
+	m_agentSpriteBatch.begin();
+	for (auto h : m_humans)
+	{
+		h->draw(m_agentSpriteBatch);
+	}
+	// Draw the zombies
+	for (auto z : m_zombies)
+	{
+		z->draw(m_agentSpriteBatch);
+	}
+	// Draw the bullets
+	for (auto b : m_bullets)
+	{
+		b.draw(m_agentSpriteBatch);
+	}
+	m_agentSpriteBatch.end();
+	m_agentSpriteBatch.renderBatch();
 
+	m_textureProgram.unuse();
+
+	// Swap our buffer and draw everything to the screen!
 	m_window.swapBuffer();
 }
-
-void MainGame::tick()
-{
-	m_player->update();
-
-	for (auto & zombie : m_zombies)
-	{
-		zombie.update();
-		if (zombie.overlaps(*m_player))
-		{
-			std::cout << "COLLISION" << std::endl;
-		}
-	}
-
-	for (auto & bullet : m_bullets)
-	{
-		bullet.update();
-		
-		for (auto & zombie : m_zombies)
-		{
-			if (bullet.alive() && zombie.alive() && bullet.overlaps(zombie))
-			{
-				zombie.die();
-				bullet.die();
-			}
-		}
-	}
-
-	// Get rid of dead entities
-	m_bullets.deleteDead();
-	// m_bullets.erase(std::remove_if(m_bullets.begin(), m_bullets.end(), [](Bullet b) {return !b.alive();}), m_bullets.end());
-	m_zombies.erase(std::remove_if(m_zombies.begin(), m_zombies.end(), [](Zombie z) {return !z.alive();}), m_zombies.end());
-}
-
-void MainGame::draw()
-{
-	m_player->draw(m_spriteBatch);
-
-	for (auto zombie : m_zombies)
-	{
-		zombie.draw(m_spriteBatch);
-	}
-
-	m_bullets.drawAll(m_spriteBatch);
-}
-
-
-

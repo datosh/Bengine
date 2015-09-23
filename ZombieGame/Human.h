@@ -1,12 +1,16 @@
 #pragma once
 
+#include "stdafx.h"
 #include "Agent.h"
+#include <gtx\rotate_vector.hpp>
 
-class Zombie : public Agent
+const int FRAME_CHANGE_INTERVAL = 120;
+
+class Human : public Agent
 {
 public:
-	Zombie();
-	~Zombie();
+	Human();
+	virtual ~Human();
 
 	void init(float speed, glm::vec2 pos);
 
@@ -15,6 +19,7 @@ public:
 		std::vector<Zombie*>& zombies);
 
 private:
-	Human* getNearestHuman(std::vector<Human*>& humans);
+	glm::vec2 m_direction;
+	int m_frames;
 };
 

@@ -1,12 +1,8 @@
 #include "Zombie.h"
+#include "Human.h"
 
 
-Zombie::Zombie() : Entity()
-{
-}
-
-Zombie::Zombie(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color) :
-	Entity(pos, dir, speed, size, color)
+Zombie::Zombie()
 {
 }
 
@@ -15,57 +11,50 @@ Zombie::~Zombie()
 {
 }
 
-bool Zombie::moveRel(glm::vec2 delta)
+void Zombie::init(float speed, glm::vec2 pos)
 {
-	m_pos += delta;
+	m_speed = speed;
+	m_position = pos;
+	m_color.r = 0;
+	m_color.g = 160;
+	m_color.b = 0;
+	m_color.a = 255;
 
-	return false;
+	m_health = 150;
 }
 
-bool Zombie::moveAbs(glm::vec2 pos)
+void Zombie::update(const std::vector<std::string>& levelData,
+	std::vector<Human*>& humans,
+	std::vector<Zombie*>& zombies)
 {
-	return false;
-}
+	Human* closestHuman = getNearestHuman(humans);
 
-void Zombie::draw(Bengine::SpriteBatch & spriteBatch)
-{
-	glm::vec4 posAndSize = glm::vec4(m_pos.x, m_pos.y, m_size, m_size);
-	glm::vec4 uv(0.0f, 0.0f, 1.0f, 1.0f);
-	static Bengine::GLTexture m_texture = Bengine::ResourceManager::getTexture("Textures/circle.png");
-	spriteBatch.draw(posAndSize, uv, m_texture.id, 0.0f, m_color);
-}
-
-bool Zombie::update()
-{
-	static const float DIST_THRESH = 150;
-
-	glm::vec2 dist_vec = m_toFollow->getPos() - m_pos;
-	float distance = glm::length(dist_vec);
-
-	if (distance > DIST_THRESH)
+	if (closestHuman != nullptr)
 	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<> dirDis(-1, 1);
-		m_dir = { dirDis(gen), dirDis(gen) };
-	}
-	else
-	{
-		m_dir = glm::normalize(m_toFollow->getPos() - m_pos);
+		glm::vec2 direction = glm::normalize(closestHuman->getPosition() - m_position);
+		m_position += direction * m_speed;
 	}
 
-	moveRel(m_dir * m_speed);
-
-	return false;
+	collideWithlevel(levelData);
 }
 
-void Zombie::follow(Player * entity)
+Human * Zombie::getNearestHuman(std::vector<Human*>& humans)
 {
-	m_toFollow = entity;
-	m_hasTarget = true;
-}
+	Human* closestHuman = nullptr;
+	// Brakets are necessary so windows.h's max() isn't used
+	float smallestDistance = (std::numeric_limits<float>::max)();
 
-bool Zombie::hasTarget()
-{
-	return m_hasTarget;
+	for (int i = 0; i < humans.size(); i++)
+	{
+		glm::vec2 distVec = humans[i]->getPosition() - m_position;
+		float distance = glm::length(distVec);
+
+		if (distance < smallestDistance)
+		{
+			smallestDistance = distance;
+			closestHuman = humans[i];
+		}
+	}
+
+	return closestHuman;
 }
