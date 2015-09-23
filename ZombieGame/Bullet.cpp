@@ -29,11 +29,7 @@ void Bullet::draw(Bengine::SpriteBatch& spriteBatch)
 		BULLET_RADIUS * 2);
 	const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
 
-	Bengine::Color color;
-	color.r = 50;
-	color.g = 50;
-	color.b = 50;
-	color.a = 255;
+	Bengine::ColorRGBA8 color(50, 50, 50, 255);
 
 	spriteBatch.draw(destRect, uvRect,
 		Bengine::ResourceManager::getTexture("Textures/circle.png").id,

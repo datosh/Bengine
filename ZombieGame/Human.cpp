@@ -18,10 +18,7 @@ void Human::init(float speed, glm::vec2 pos)
 
 	m_speed = speed;
 	m_position = pos;
-	m_color.r = 200;
-	m_color.g = 0;
-	m_color.b = 200;
-	m_color.a = 255;
+	m_color = Bengine::ColorRGBA8(200, 0, 200, 255);
 
 	m_health = 20;
 

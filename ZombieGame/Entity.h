@@ -10,7 +10,7 @@ class Entity
 {
 public:
 	Entity();
-	Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color);
+	Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::ColorRGBA8 color);
 	~Entity();
 
 	// Virtual
@@ -27,7 +27,7 @@ public:
 	void setSize(float size) { m_size = size; }
 	void setPos(glm::vec2 pos) { m_pos = pos; }
 	void setDir(glm::vec2 dir) { m_dir = dir; }
-	void setColor(Bengine::Color color) { m_color = color; }
+	void setColor(Bengine::ColorRGBA8 color) { m_color = color; }
 	void die();
 
 	// Getter
@@ -35,13 +35,13 @@ public:
 	float getSize() { return m_size; }
 	glm::vec2 getPos() { return m_pos; }
 	glm::vec2 getDir() { return m_dir; }
-	Bengine::Color getColor() { return m_color; }
+	Bengine::ColorRGBA8 getColor() { return m_color; }
 	bool alive();
 
 protected:
 	float m_speed, m_size;
 	glm::vec2 m_pos, m_dir;
-	Bengine::Color m_color;
+	Bengine::ColorRGBA8 m_color;
 
 	bool m_alive;
 };

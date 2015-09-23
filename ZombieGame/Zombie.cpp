@@ -15,10 +15,7 @@ void Zombie::init(float speed, glm::vec2 pos)
 {
 	m_speed = speed;
 	m_position = pos;
-	m_color.r = 0;
-	m_color.g = 160;
-	m_color.b = 0;
-	m_color.a = 255;
+	m_color = Bengine::ColorRGBA8(0, 160, 0, 255);
 
 	m_health = 150;
 }

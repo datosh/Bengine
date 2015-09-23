@@ -23,10 +23,7 @@ void Player::init(float speed, glm::vec2 position,
 	m_camera = camera;
 	m_bullets = bullets;
 
-	m_color.r = 0;
-	m_color.g = 0;
-	m_color.b = 126;
-	m_color.a = 255;
+	m_color = Bengine::ColorRGBA8(0, 0, 127, 255);
 
 	m_health = 150;
 }

@@ -8,11 +8,11 @@ Entity::Entity()
 	m_dir = { 0.0f, 0.0f };
 	m_speed = 0.0f;
 	m_size = 0.0f;
-	m_color = { 0, 0, 0 };
+	m_color = { 0, 0, 0, 0 };
 	m_alive = false;
 }
 
-Entity::Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::Color color) :
+Entity::Entity(glm::vec2 pos, glm::vec2 dir, float speed, float size, Bengine::ColorRGBA8 color) :
 	m_pos(pos),
 	m_dir(dir),
 	m_speed(speed),
