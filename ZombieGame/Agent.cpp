@@ -91,18 +91,19 @@ void Agent::checkTilePosition(const std::vector<std::string>& levelData,
 	std::vector<glm::vec2>& collideTilePositions, 
 	float x, float y)
 {
-	glm::vec2 cornerPos = glm::vec2(floor(x / TILE_WIDTH), floor(y / TILE_WIDTH));
+	// Get the position of this corner in grid-space
+	glm::vec2 gridPos = glm::vec2(floor(x / (float)TILE_WIDTH),
+		floor(y / (float)TILE_WIDTH));
 
-	// If we are outsite the world just return
-	if (cornerPos.x < 0 || cornerPos.x >= levelData[0].length() ||
-		cornerPos.y < 0 || cornerPos.y >= levelData.size())
-	{
+	// If we are outside the world, just return
+	if (gridPos.x < 0 || gridPos.x >= levelData[0].size() ||
+		gridPos.y < 0 || gridPos.y >= levelData.size()) {
 		return;
 	}
 
-	if (levelData[static_cast<int>(cornerPos.y)][static_cast<int>(cornerPos.x)] != '.')
-	{
-		collideTilePositions.push_back(cornerPos * (float)TILE_WIDTH + glm::vec2((float)(TILE_WIDTH / 2)));
+	// If this is not an air tile, we should collide with it
+	if (levelData[gridPos.y][gridPos.x] != '.') {
+		collideTilePositions.push_back(gridPos * (float)TILE_WIDTH + glm::vec2((float)TILE_WIDTH / 2.0f));
 	}
 }
 

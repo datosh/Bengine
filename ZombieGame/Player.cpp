@@ -30,35 +30,36 @@ void Player::init(float speed, glm::vec2 position,
 
 void Player::update(const std::vector<std::string>& levelData,
 	std::vector<Human*>& humans,
-	std::vector<Zombie*>& zombies)
+	std::vector<Zombie*>& zombies,
+	float deltaTime)
 {
-	if (m_inputManager->isKeyPressed(SDLK_w))
+	if (m_inputManager->isKeyDown(SDLK_w))
 	{
-		m_position.y += m_speed;
+		m_position.y += m_speed * deltaTime;
 	}
-	else if (m_inputManager->isKeyPressed(SDLK_s))
+	else if (m_inputManager->isKeyDown(SDLK_s))
 	{
-		m_position.y -= m_speed;
-	}
-
-	if (m_inputManager->isKeyPressed(SDLK_a))
-	{
-		m_position.x -= m_speed;
-	}
-	else if (m_inputManager->isKeyPressed(SDLK_d))
-	{
-		m_position.x += m_speed;
+		m_position.y -= m_speed * deltaTime;
 	}
 
-	if (m_inputManager->isKeyPressed(SDLK_1) && m_guns.size() >= 0)
+	if (m_inputManager->isKeyDown(SDLK_a))
+	{
+		m_position.x -= m_speed * deltaTime;
+	}
+	else if (m_inputManager->isKeyDown(SDLK_d))
+	{
+		m_position.x += m_speed * deltaTime;
+	}
+
+	if (m_inputManager->isKeyDown(SDLK_1) && m_guns.size() >= 0)
 	{
 		m_currentGunIndex = 0;
 	}
-	else if (m_inputManager->isKeyPressed(SDLK_2) && m_guns.size() >= 1)
+	else if (m_inputManager->isKeyDown(SDLK_2) && m_guns.size() >= 1)
 	{
 		m_currentGunIndex = 1;
 	}
-	else if (m_inputManager->isKeyPressed(SDLK_3) && m_guns.size() >= 2)
+	else if (m_inputManager->isKeyDown(SDLK_3) && m_guns.size() >= 2)
 	{
 		m_currentGunIndex = 2;
 	}
@@ -72,10 +73,11 @@ void Player::update(const std::vector<std::string>& levelData,
 
 		glm::vec2 direction = glm::normalize(mouseCoords - centerPosition);
 
-		m_guns[m_currentGunIndex]->update(m_inputManager->isKeyPressed(SDL_BUTTON_LEFT),
+		m_guns[m_currentGunIndex]->update(m_inputManager->isKeyDown(SDL_BUTTON_LEFT),
 			centerPosition,
 			direction,
-			*m_bullets);
+			*m_bullets,
+			deltaTime);
 	}
 
 	collideWithlevel(levelData);

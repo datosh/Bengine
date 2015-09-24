@@ -14,9 +14,10 @@ Bullet::~Bullet()
 {
 }
 
-bool Bullet::update(const std::vector<std::string>& levelData)
+bool Bullet::update(const std::vector<std::string>& levelData,
+	float deltaTime)
 {
-	m_position += m_direction * m_speed;
+	m_position += m_direction * m_speed * deltaTime;
 
 	return collideWithWorld(levelData);
 }

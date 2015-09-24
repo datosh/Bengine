@@ -52,7 +52,7 @@ void MainGame::initSystems() {
 
 void MainGame::initLevel()
 {
-	m_levels.push_back(new Level("Levels/level1.txt"));
+	m_levels.push_back(new Level("Levels/level2.txt"));
 	m_currentLevel = 0;
 
 	m_player = new Player();
@@ -99,21 +99,47 @@ void MainGame::initShaders() {
 
 void MainGame::gameLoop() {
 	
-	Bengine::FPSLimiter fpsLimiter;
-	fpsLimiter.setMaxFPS(6000.0f);
+	const float DESIRED_FPS = 60.0f;
+	const float MS_PER_SECOND = 1000;
+	const float DESIRED_FRAMETIME = MS_PER_SECOND / DESIRED_FPS;
+	const float MAX_DELTA_TIME = 1.0f;
 
-	const float CAMERA_SCALE = 1.0f / 4.0f;
+	const int MAX_PHYSICS_STEPS = 6;
+
+	Bengine::FPSLimiter fpsLimiter;
+	fpsLimiter.setMaxFPS(DESIRED_FPS);
+
+	const float CAMERA_SCALE = 1.0f / 2.0f;
 	m_camera.setScale(CAMERA_SCALE);
+
+	float previousTicks = SDL_GetTicks();
 
 	while (m_gameState == GameState::PLAY)
 	{
 		fpsLimiter.begin();
 
+		// Calculate the delta time
+		float newTicks = SDL_GetTicks();
+		float frameTime = newTicks - previousTicks;
+		previousTicks = newTicks;
+		float totalDeltaTime = frameTime / DESIRED_FRAMETIME;
+
+		m_inputManager.update();
 		processInput();
 
-		updateAgents();
+		int i = 0;
+		while (totalDeltaTime > 0.0f && i < MAX_PHYSICS_STEPS)
+		{
+			float deltaTime = std::min(totalDeltaTime, MAX_DELTA_TIME);
 
-		updateBullets();
+			// BEGIN UPDATES
+			updateAgents(deltaTime);
+			updateBullets(deltaTime);
+			// END UPDATES
+
+			totalDeltaTime -= deltaTime;
+			++i;
+		}
 
 		m_camera.setPositon(m_player->getPosition());
 		m_camera.update();
@@ -126,20 +152,20 @@ void MainGame::gameLoop() {
 
 }
 
-void MainGame::updateAgents()
+void MainGame::updateAgents(float deltaTime)
 {
 	// Update all the humans
 	for (auto h : m_humans)
 	{
 		h->update(m_levels[m_currentLevel]->getLevelData(),
-			m_humans, m_zombies);
+			m_humans, m_zombies, deltaTime);
 	}
 
 	// Update all the zombie
 	for (auto z : m_zombies)
 	{
 		z->update(m_levels[m_currentLevel]->getLevelData(),
-			m_humans, m_zombies);
+			m_humans, m_zombies, deltaTime);
 	}
 
 	for (int i = 0; i < m_zombies.size(); ++i)
@@ -184,13 +210,13 @@ void MainGame::updateAgents()
 }
 
 // TODO: Collide Bullets with humans and win condition + stats
-void MainGame::updateBullets()
+void MainGame::updateBullets(float deltaTime)
 {
 	// Update and collide with world
 	for (int i = 0; i < m_bullets.size(); )
 	{
 		// Does bullet collide with a wall?
-		if (m_bullets[i].update(m_levels[m_currentLevel]->getLevelData()))
+		if (m_bullets[i].update(m_levels[m_currentLevel]->getLevelData(), deltaTime))
 		{
 			m_bullets[i] = m_bullets.back();
 			m_bullets.pop_back();
@@ -285,22 +311,33 @@ void MainGame::drawGame() {
 	// Draw the level
 	m_levels[m_currentLevel]->draw();
 
-	// Draw the humans
+	// Start drawing on agent batch
 	m_agentSpriteBatch.begin();
+
+	// Draw the humans
+	glm::vec2 agentDims(AGENT_RADIUS * 2.0f);
 	for (auto h : m_humans)
 	{
-		h->draw(m_agentSpriteBatch);
+		if (m_camera.isBoxInView(h->getPosition(), agentDims))
+		{
+			h->draw(m_agentSpriteBatch);
+		}
 	}
 	// Draw the zombies
 	for (auto z : m_zombies)
 	{
-		z->draw(m_agentSpriteBatch);
+		if (m_camera.isBoxInView(z->getPosition(), agentDims))
+		{
+			z->draw(m_agentSpriteBatch);
+		}
 	}
 	// Draw the bullets
 	for (auto b : m_bullets)
 	{
 		b.draw(m_agentSpriteBatch);
 	}
+
+	// End drawing on agent batch
 	m_agentSpriteBatch.end();
 	m_agentSpriteBatch.renderBatch();
 

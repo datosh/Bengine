@@ -33,9 +33,10 @@ void Human::init(float speed, glm::vec2 pos)
 
 void Human::update(const std::vector<std::string>& levelData,
 	std::vector<Human*>& humans,
-	std::vector<Zombie*>& zombies)
+	std::vector<Zombie*>& zombies,
+	float deltaTime)
 {
-	m_position += m_direction * m_speed;
+	m_position += m_direction * m_speed * deltaTime;
 
 	// Randomly change the direction every FRAME_CHANGE_INTERVAL frames
 	static std::mt19937 randomEngine(time(nullptr));

@@ -40,8 +40,8 @@ private:
 	/// Main game loop for the program
 	void gameLoop();
 
-	void updateAgents();
-	void updateBullets();
+	void updateAgents(float deltaTime);
+	void updateBullets(float deltaTime);
 
 	/// Handles input processing
 	void processInput();

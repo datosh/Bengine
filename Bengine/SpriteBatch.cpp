@@ -15,42 +15,25 @@ namespace Bengine {
 	{
 		m_sortType = sortType;
 		m_renderBatches.clear();
-		for (size_t i = 0; i < m_glyphs.size(); i++)
-		{ 
-			delete m_glyphs[i];
-		}
 		m_glyphs.clear();
 	}
 
 	void SpriteBatch::end()
 	{
+		// Set up all the pointers for fast sorting
+		m_glyphPointers.resize(m_glyphs.size());
+		for (size_t i = 0; i < m_glyphs.size(); ++i)
+		{
+			m_glyphPointers[i] = &m_glyphs[i];
+		}
+		
 		sortGlpyhs();
 		createRenderBatches();
 	}
 
 	void SpriteBatch::draw(const glm::vec4 & destRect, const glm::vec4 & uvRect, GLuint texture, float depth, const ColorRGBA8 & color)
 	{
-		Glyph* newGlyph = new Glyph();
-		newGlyph->texture = texture;
-		newGlyph->depth = depth;
-
-		newGlyph->topLeft.color = color;
-		newGlyph->topLeft.setPosition(destRect.x, destRect.y + destRect.w);
-		newGlyph->topLeft.setUV(uvRect.x, uvRect.y + uvRect.w);
-
-		newGlyph->bottomLeft.color = color;
-		newGlyph->bottomLeft.setPosition(destRect.x, destRect.y);
-		newGlyph->bottomLeft.setUV(uvRect.x, uvRect.y);
-
-		newGlyph->bottomRight.color = color;
-		newGlyph->bottomRight.setPosition(destRect.x + destRect.z, destRect.y);
-		newGlyph->bottomRight.setUV(uvRect.x + uvRect.z, uvRect.y);
-
-		newGlyph->topRight.color = color;
-		newGlyph->topRight.setPosition(destRect.x + destRect.z, destRect.y + destRect.w);
-		newGlyph->topRight.setUV(uvRect.x + uvRect.z, uvRect.y + uvRect.w);
-
-		m_glyphs.push_back(newGlyph);
+		m_glyphs.emplace_back(destRect, uvRect, texture, depth, color);
 	}
 
 	void SpriteBatch::renderBatch()
@@ -69,40 +52,40 @@ namespace Bengine {
 	void SpriteBatch::createRenderBatches()
 	{
 		std::vector<Vertex> vertices;
-		vertices.resize(m_glyphs.size() * 6);
+		vertices.resize(m_glyphPointers.size() * 6);
 
-		if (m_glyphs.empty())
+		if (m_glyphPointers.empty())
 		{
 			return;
 		}
 
 		int offset = 0;
 		int cv = 0; // currentVertex
-		m_renderBatches.emplace_back(offset, 6, m_glyphs[0]->texture);
-		vertices[cv++] = m_glyphs[0]->topLeft;
-		vertices[cv++] = m_glyphs[0]->bottomLeft;
-		vertices[cv++] = m_glyphs[0]->bottomRight;
-		vertices[cv++] = m_glyphs[0]->bottomRight;
-		vertices[cv++] = m_glyphs[0]->topRight;
-		vertices[cv++] = m_glyphs[0]->topLeft;
+		m_renderBatches.emplace_back(offset, 6, m_glyphPointers[0]->texture);
+		vertices[cv++] = m_glyphPointers[0]->topLeft;
+		vertices[cv++] = m_glyphPointers[0]->bottomLeft;
+		vertices[cv++] = m_glyphPointers[0]->bottomRight;
+		vertices[cv++] = m_glyphPointers[0]->bottomRight;
+		vertices[cv++] = m_glyphPointers[0]->topRight;
+		vertices[cv++] = m_glyphPointers[0]->topLeft;
 		offset += 6;
 
-		for (size_t cg = 1; cg < m_glyphs.size(); cg++)
+		for (size_t cg = 1; cg < m_glyphPointers.size(); cg++)
 		{
-			if (m_glyphs[cg]->texture != m_glyphs[cg - 1]->texture)
+			if (m_glyphPointers[cg]->texture != m_glyphPointers[cg - 1]->texture)
 			{
-				m_renderBatches.emplace_back(offset, 6, m_glyphs[cg]->texture);
+				m_renderBatches.emplace_back(offset, 6, m_glyphPointers[cg]->texture);
 			}
 			else
 			{
 				m_renderBatches.back().m_numVertices += 6;
 			}
-			vertices[cv++] = m_glyphs[cg]->topLeft;
-			vertices[cv++] = m_glyphs[cg]->bottomLeft;
-			vertices[cv++] = m_glyphs[cg]->bottomRight;
-			vertices[cv++] = m_glyphs[cg]->bottomRight;
-			vertices[cv++] = m_glyphs[cg]->topRight;
-			vertices[cv++] = m_glyphs[cg]->topLeft;
+			vertices[cv++] = m_glyphPointers[cg]->topLeft;
+			vertices[cv++] = m_glyphPointers[cg]->bottomLeft;
+			vertices[cv++] = m_glyphPointers[cg]->bottomRight;
+			vertices[cv++] = m_glyphPointers[cg]->bottomRight;
+			vertices[cv++] = m_glyphPointers[cg]->topRight;
+			vertices[cv++] = m_glyphPointers[cg]->topLeft;
 			offset += 6;
 		}
 
@@ -147,13 +130,13 @@ namespace Bengine {
 		switch (m_sortType)
 		{
 		case GlyphSortType::BACK_TO_FRONT:
-			std::stable_sort(m_glyphs.begin(), m_glyphs.end(), compareBackToFront);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareBackToFront);
 			break;
 		case GlyphSortType::FRONT_TO_BACK:
-			std::stable_sort(m_glyphs.begin(), m_glyphs.end(), compareFrontToBack);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareFrontToBack);
 			break;
 		case GlyphSortType::TEXTURE:
-			std::stable_sort(m_glyphs.begin(), m_glyphs.end(), compareTexture);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareTexture);
 			break;
 		default:
 			break;
