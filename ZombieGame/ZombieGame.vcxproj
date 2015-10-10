@@ -69,12 +69,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)include\glew\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glm\;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Debug\;$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\glew\;$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glm\;$(SolutionDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Debug\;$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)include\SDL\;$(SolutionDir)include\glm\;$(SolutionDir)include\glew\;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL\;$(SolutionDir)Release\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL\;$(SolutionDir)include\glm\;$(SolutionDir)include\glew\;$(SolutionDir);$(SolutionDir)include\SDL_ttf\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\SDL\;$(SolutionDir)Release\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,7 +84,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;Bengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;Bengine.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -111,7 +111,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;Bengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;Bengine.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -134,6 +134,7 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityList.h" />
+    <ClInclude Include="GenericLevel.h" />
     <ClInclude Include="Gun.h" />
     <ClInclude Include="Human.h" />
     <ClInclude Include="Level.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityList.cpp" />
+    <ClCompile Include="GenericLevel.cpp" />
     <ClCompile Include="Gun.cpp" />
     <ClCompile Include="Human.cpp" />
     <ClCompile Include="Level.cpp" />

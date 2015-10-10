@@ -46,13 +46,19 @@ void MainGame::initSystems() {
 	initShaders();
 
 	m_agentSpriteBatch.init();
+	m_hudSpriteBatch.init();
+
+	// Init sprite font
+	m_spriteFont = new Bengine::SpriteFont("Fonts/chintzy.ttf", 64);
 
 	m_camera.init(m_screenWidth, m_screenHeight);
+	m_hudCamera.init(m_screenWidth, m_screenHeight);
+	m_hudCamera.setPositon(glm::vec2(m_screenWidth / 2, m_screenHeight / 2));
 }
 
 void MainGame::initLevel()
 {
-	m_levels.push_back(new Level("Levels/level2.txt"));
+	m_levels.push_back(new Level("Levels/level1.txt"));
 	m_currentLevel = 0;
 
 	m_player = new Player();
@@ -109,7 +115,7 @@ void MainGame::gameLoop() {
 	Bengine::FPSLimiter fpsLimiter;
 	fpsLimiter.setMaxFPS(DESIRED_FPS);
 
-	const float CAMERA_SCALE = 1.0f / 2.0f;
+	const float CAMERA_SCALE = 1.0f / 4.0f;
 	m_camera.setScale(CAMERA_SCALE);
 
 	float previousTicks = SDL_GetTicks();
@@ -143,6 +149,8 @@ void MainGame::gameLoop() {
 
 		m_camera.setPositon(m_player->getPosition());
 		m_camera.update();
+
+		m_hudCamera.update();
 
 		drawGame();
 
@@ -341,8 +349,38 @@ void MainGame::drawGame() {
 	m_agentSpriteBatch.end();
 	m_agentSpriteBatch.renderBatch();
 
+	drawHUD();
+
 	m_textureProgram.unuse();
 
 	// Swap our buffer and draw everything to the screen!
 	m_window.swapBuffer();
+}
+
+void MainGame::drawHUD()
+{
+	// TOOD: Make this save
+	char buffer[256];
+
+	// Use the hud camera for drawing the hud
+	glm::mat4 projectionMatrix = m_hudCamera.getCameraMatrix();
+	GLint pUniform = m_textureProgram.getUniformLocation("P");
+	glUniformMatrix4fv(pUniform, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	m_hudSpriteBatch.begin();
+
+	// Start rendering the HUD
+
+	sprintf_s(buffer, "NUMBER OF ZOMBIES REMAINING %d", m_zombies.size());
+	m_spriteFont->draw(m_hudSpriteBatch, buffer, 
+		glm::vec2(0, 0), 
+		glm::vec2(.5f), 0.0f,
+		Bengine::ColorRGBA8(255, 255, 255, 255));
+
+
+
+	// End rendering the HUD
+
+	m_hudSpriteBatch.end();
+	m_hudSpriteBatch.renderBatch();
 }

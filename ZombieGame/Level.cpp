@@ -75,6 +75,7 @@ Level::Level(const std::string& fileName)
 				m_zombieStartPos.emplace_back(x * TILE_WIDTH, y * TILE_WIDTH);
 				break;
 			case '.':
+			case '_':
 				break;
 			default:
 				std::cout << "Unexpected symbol " << tile << " at " << x << ":" << y;

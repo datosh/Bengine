@@ -5,6 +5,7 @@
 #include <Bengine/Camera2D.h>
 #include <Bengine/InputManager.h>
 #include <Bengine/SpriteBatch.h>
+#include <Bengine/SpriteFont.h>
 
 #include "Player.h"
 #include "Level.h"
@@ -49,6 +50,9 @@ private:
 	/// Renders the game
 	void drawGame();
 
+	/// Drawrs the HUD
+	void drawHUD();
+
 	/// Member Variables
 	Bengine::Window m_window; ///< The game window
 
@@ -57,8 +61,10 @@ private:
 	Bengine::InputManager m_inputManager; ///< Handles input
 
 	Bengine::Camera2D m_camera; ///< Main Camera
+	Bengine::Camera2D m_hudCamera; ///< Main Camera
 
 	Bengine::SpriteBatch m_agentSpriteBatch;
+	Bengine::SpriteBatch m_hudSpriteBatch;
 
 	std::vector<Level*> m_levels; ///< Vector of all levels
 
@@ -72,6 +78,8 @@ private:
 	std::vector<Human*> m_humans;
 	std::vector<Zombie*> m_zombies;
 	std::vector<Bullet> m_bullets;
+
+	Bengine::SpriteFont* m_spriteFont;
 
 	GameState m_gameState;
 };

@@ -70,16 +70,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\git\lib\SDL\include;D:\git\lib\glm\glm;D:\git\lib\glew-1.13.0\include\GL;$(IncludePath)</IncludePath>
     <LibraryPath>D:\git\lib\glew-1.13.0\lib\Release\Win32;D:\git\lib\SDL\lib\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(SolutionDir)include\glm\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(SolutionDir)include\glm\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,14 +89,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,7 +128,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -173,6 +173,7 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
+    <ClCompile Include="SpriteFont.cpp" />
     <ClCompile Include="TextureCache.cpp" />
     <ClCompile Include="Timing.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="SpriteFont.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TextureCache.h" />
     <ClInclude Include="Timing.h" />
