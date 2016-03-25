@@ -70,16 +70,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL_mixer\;$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\SDL_mixer\;$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\SDL\;$(SolutionDir)lib\glew\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\git\lib\SDL\include;D:\git\lib\glm\glm;D:\git\lib\glew-1.13.0\include\GL;$(IncludePath)</IncludePath>
     <LibraryPath>D:\git\lib\glew-1.13.0\lib\Release\Win32;D:\git\lib\SDL\lib\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(SolutionDir)include\glm\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL_mixer\;$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\SDL\;$(SolutionDir)include\glew\;$(SolutionDir)include\glm\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\SDL_mixer\;$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)lib\glew\;$(SolutionDir)lib\SDL\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,7 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,6 +162,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="Bengine.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Error.cpp" />
@@ -169,6 +170,8 @@
     <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="IOManager.cpp" />
+    <ClCompile Include="ParticleBatch2D.cpp" />
+    <ClCompile Include="ParticleEngine2D.cpp" />
     <ClCompile Include="picopng.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="sprite.cpp" />
@@ -179,6 +182,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="Bengine.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Errors.h" />
@@ -187,6 +191,8 @@
     <ClInclude Include="ImageLoader.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="IOManager.h" />
+    <ClInclude Include="ParticleBatch2D.h" />
+    <ClInclude Include="ParticleEngine2D.h" />
     <ClInclude Include="picopng.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="sprite.h" />

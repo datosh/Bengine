@@ -5,13 +5,18 @@
 #include <glm.hpp>
 #include <gtx\rotate_vector.hpp>
 
+#include <Bengine\AudioEngine.h>
+
 #include "Bullet.h"
 
 
 class Gun
 {
 public:
-	Gun(std::string name, int fireRate, int bulletsPerShot, float spread, float bulletDamage, float bulletSpeed);
+	Gun(std::string name, 
+		int fireRate, int bulletsPerShot, 
+		float spread, float bulletDamage, float bulletSpeed,
+		Bengine::SoundEffect fireEffect);
 	~Gun();
 
 	void update(bool isMouseDown, 
@@ -21,8 +26,9 @@ public:
 		float deltaTime);
 
 private:
-
 	void fire(const glm::vec2& direction, const glm::vec2& position, std::vector<Bullet>& bullets);
+
+	Bengine::SoundEffect m_fireEffect;
 
 	std::string m_name;
 	int m_fireRate; ///< Fire rate in terms of frames

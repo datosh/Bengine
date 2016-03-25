@@ -6,6 +6,9 @@
 #include <Bengine/InputManager.h>
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/SpriteFont.h>
+#include <Bengine/AudioEngine.h>
+#include <Bengine/ParticleEngine2D.h>
+#include <Bengine/ParticleBatch2D.h>
 
 #include "Player.h"
 #include "Level.h"
@@ -53,6 +56,9 @@ private:
 	/// Drawrs the HUD
 	void drawHUD();
 
+	/// Adds blood tot he particle engine
+	void addBlood(const glm::vec2& position, int numParticles);
+
 	/// Member Variables
 	Bengine::Window m_window; ///< The game window
 
@@ -61,10 +67,15 @@ private:
 	Bengine::InputManager m_inputManager; ///< Handles input
 
 	Bengine::Camera2D m_camera; ///< Main Camera
-	Bengine::Camera2D m_hudCamera; ///< Main Camera
+	Bengine::Camera2D m_hudCamera; ///< HUD Camera
 
 	Bengine::SpriteBatch m_agentSpriteBatch;
 	Bengine::SpriteBatch m_hudSpriteBatch;
+
+	Bengine::AudioEngine m_audioEngine;
+
+	Bengine::ParticleEngine2D m_particleEngine;
+	Bengine::ParticleBatch2D* m_bloodParticleBatch;
 
 	std::vector<Level*> m_levels; ///< Vector of all levels
 

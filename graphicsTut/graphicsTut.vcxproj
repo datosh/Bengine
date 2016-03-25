@@ -69,8 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)include\glew\;$(SolutionDir);$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Debug\;$(SolutionDir)\lib\glew\;$(SolutionDir)\lib\SDL\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)include\SDL_mixer\;$(SolutionDir)include\SDL_ttf\;$(SolutionDir)include\glew\;$(SolutionDir);$(SolutionDir)include\glm\;$(SolutionDir)include\SDL\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\SDL_mixer\;$(SolutionDir)lib\SDL_ttf\;$(SolutionDir)Debug\;$(SolutionDir)\lib\glew\;$(SolutionDir)\lib\SDL\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\git\Bengine;D:\git\lib\glew-1.13.0\include\GL;D:\git\lib\glm\glm;D:\git\lib\SDL\include;$(IncludePath)</IncludePath>
@@ -81,7 +81,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -131,13 +131,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="ball.cpp" />
+    <ClCompile Include="entity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainGame.cpp" />
+    <ClCompile Include="paddle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="ball.h" />
+    <ClInclude Include="entity.h" />
     <ClInclude Include="mainGame.h" />
+    <ClInclude Include="paddle.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

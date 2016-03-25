@@ -6,7 +6,6 @@ Zombie::Zombie()
 {
 }
 
-
 Zombie::~Zombie()
 {
 }
@@ -17,7 +16,7 @@ void Zombie::init(float speed, glm::vec2 pos)
 	m_position = pos;
 	m_color = Bengine::ColorRGBA8(0, 160, 0, 255);
 
-	m_health = 150;
+	m_health = 75;
 }
 
 void Zombie::update(const std::vector<std::string>& levelData,
