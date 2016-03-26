@@ -33,11 +33,17 @@ public:
 	virtual bool left_of(const Entity* entity, float delta=10);
 	virtual bool right_of(const Entity* entity, float delta=10);
 
-	/** Returns the current position */
+	// GETTER
 	glm::vec2 get_position() const { return m_position; }
 	glm::vec2 get_size() const { return glm::vec2(m_width, m_height); }
 	float get_width() const { return m_width; }
 	float get_height() const { return m_height; }
+	bool is_alive() const { return m_alive; }
+	bool is_dead() const { return !m_alive; }
+
+	// SETTER
+	void kill() { m_alive = false; }
+	void set_position(glm::vec2 position) { m_position = position; }
 
 	float right() const { return m_position.x + m_width; }
 	float left() const { return m_position.x; }
@@ -48,4 +54,18 @@ protected:
 	glm::vec2 m_position;
 	float m_speed;
 	float m_width, m_height;
+	bool m_alive;
+};
+
+struct DeleteIfEntityDead
+{
+	void operator()(Entity* &ptr) const
+	{
+		bool brk_dead = ptr->is_dead();
+		if (brk_dead) {
+			Entity* tmp = ptr;
+			ptr = nullptr;
+			delete tmp;
+		}
+	}
 };

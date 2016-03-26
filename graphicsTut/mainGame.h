@@ -14,6 +14,7 @@
 #include "ball.h"
 #include "brick.h"
 #include "power_up.h"
+#include "brick_particles.h"
 
 enum class GameState {
 	PLAY,
@@ -34,8 +35,8 @@ public:
 	int get_height() const { return m_screenHeight; }
 	Paddle* get_paddle() const { return m_paddle; }
 	Bengine::Camera2D get_mainCamera() const { return m_camera; }
-	std::vector<Brick*> get_bricks() const { return m_bricks; }
-	std::vector<PowerUp*> get_powerUps() const { return m_powerUps; }
+	std::vector<Entity*> get_bricks() const { return m_bricks; }
+	std::vector<Entity*> get_powerUps() const { return m_powerUps; }
 	float get_powerUpChance() const { return 1.0f; }
 
 	/// So any object can signalize that the game is over
@@ -48,6 +49,10 @@ public:
 	void add_random_power_up(glm::vec2 position);
 	/// Spawns a new ball for every existing ball
 	void double_balls();
+	/// Spawn Brick Particles
+	void spawn_brick_paricles(glm::vec2 position);
+	/// 
+	void erase_dead_entities(std::vector<Entity*>& entities);
 
 private:
 	/// Initializes the core systems
@@ -93,9 +98,10 @@ private:
 
 	// NEW OBJECTS
 	Paddle* m_paddle;
-	std::vector<Ball*> m_balls;
-	std::vector<Brick*> m_bricks;
-	std::vector<PowerUp*> m_powerUps;
+	std::vector<Entity*> m_balls;
+	std::vector<Entity*> m_bricks;
+	std::vector<Entity*> m_powerUps;
+	std::vector<Entity*> m_brickParticles;
 
 	unsigned int m_points;
 };

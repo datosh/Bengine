@@ -67,9 +67,8 @@ void Ball::update(MainGame * mainGame, float deltaTime)
 	}
 
 	// Bounce of the any bricks and destroy them
-	std::vector<Brick*> bricks = mainGame->get_bricks();
-	if (Entity* collidedEntity = collideWithEntities({ bricks.begin(), bricks.end() })) {
-		Brick* collidedBrick = static_cast<Brick*>(collidedEntity);
+	if (Entity* collidedEntity = collideWithEntities(mainGame->get_bricks())) {
+		Brick* collidedBrick = dynamic_cast<Brick*>(collidedEntity);
 		
 		// Check where the destroyed brick is relative to the ball
 		auto brick_pos = collidedBrick->get_position();
@@ -116,6 +115,9 @@ void Ball::update(MainGame * mainGame, float deltaTime)
 		if (chance > randfloat) { // Yes we cant a powerup spawn
 			mainGame->add_random_power_up(collidedBrick->get_position());
 		}
+
+		// Spawn the explosion particles
+		mainGame->spawn_brick_paricles(collidedBrick->get_position());
 
 		// Mark brick for remove
 		collidedBrick->kill();

@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="ball.cpp" />
     <ClCompile Include="brick.cpp" />
+    <ClCompile Include="brick_particles.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainGame.cpp" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="ball.h" />
     <ClInclude Include="brick.h" />
+    <ClInclude Include="brick_particles.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="mainGame.h" />
     <ClInclude Include="paddle.h" />

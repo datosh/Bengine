@@ -33,7 +33,7 @@
 
 namespace Bengine {
 
-    class GLTexture;
+    struct GLTexture;
     class SpriteBatch;
 
     struct CharGlyph {

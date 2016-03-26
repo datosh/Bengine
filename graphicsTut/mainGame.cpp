@@ -55,18 +55,42 @@ void MainGame::double_balls()
 	size_t num_balls = m_balls.size();
 	for (size_t i = 0; i < num_balls; ++i)
 	{
-		auto& ball = m_balls[i];
+		// Cast to ball
+		Ball* ball = dynamic_cast<Ball*>(m_balls[i]);
 
+		// Get velo and position
 		auto velo = ball->get_velocity();
 		auto pos = ball->get_position();
 
+		// Alter the direction vector slightly
 		velo = glm::rotate(velo, 20.0f);
 		
-		m_balls.push_back(new Ball());
-		m_balls.back()->init(this);
-		m_balls.back()->set_velocity(velo);
-		m_balls.back()->set_position(pos);
+		// Create new ball and put in vector
+		Ball* new_ball = new Ball();
+		new_ball->init(this);
+		new_ball->set_velocity(velo);
+		new_ball->set_position(pos);
+		m_balls.push_back(new_ball);
 	}
+}
+
+void MainGame::spawn_brick_paricles(glm::vec2 position)
+{
+	// Spawn 4x2 brick particles that fly away in different directions
+	for (size_t i = 0; i < 4; ++i) {
+		for (size_t j = 0; j < 2; ++j) {
+			auto bp = new BrickParticle();
+			bp->init(this);
+			bp->set_position(position + glm::vec2(25 * i, 25 * j));
+			m_brickParticles.push_back(bp);
+		}
+	}
+}
+
+void MainGame::erase_dead_entities(std::vector<Entity*>& entities)
+{
+	std::for_each(entities.begin(), entities.end(), DeleteIfEntityDead());
+	entities.erase(std::remove(entities.begin(), entities.end(), nullptr), entities.end());
 }
 
 void MainGame::initSystems() {
@@ -107,11 +131,11 @@ void MainGame::initLevel()
 	// Init the bricks
 	Bengine::ColorRGBA8 brickBaseColor(2, 29, 39, 255);
 	glm::vec2 brickBaseSize(75, 30);
-	std::string brickTexturePath("Textures/light_bricks.png");
 	for (size_t i = 0; i < 10; ++i)
 	{
-		m_bricks.push_back(new Brick());
-		m_bricks.back()->init(glm::vec2(100 + i * 80, 450), brickBaseSize, brickBaseColor, 7);
+		Brick* new_brick = new Brick();
+		new_brick->init(glm::vec2(100 + i * 80, 450), brickBaseSize, brickBaseColor, 7);
+		m_bricks.push_back(new_brick);
 	}
 }
 
@@ -171,22 +195,25 @@ void MainGame::gameLoop() {
 			for (auto pu : m_powerUps) {	
 				pu->update(this, deltaTime);
 			}
+			for (auto bp : m_brickParticles) {
+				bp->update(this, deltaTime);
+			}
 
 			// Remove all dead bricks
-			std::for_each(m_bricks.begin(), m_bricks.end(), DeleteIfBrickDead());
-			m_bricks.erase(std::remove(m_bricks.begin(), m_bricks.end(), nullptr), m_bricks.end());
+			erase_dead_entities(m_bricks);
 			// If no more bricks => game over, since won
 			if (m_bricks.size() == 0) game_over("No more bricks - yeahy!\n");
 
 			// Remove all dead power ups
-			std::for_each(m_powerUps.begin(), m_powerUps.end(), DeleteIfPowerUpDead());
-			m_powerUps.erase(std::remove(m_powerUps.begin(), m_powerUps.end(), nullptr), m_powerUps.end());
+			erase_dead_entities(m_powerUps);
 
 			// Remoave all dead balls
-			std::for_each(m_balls.begin(), m_balls.end(), DeleteIfBallDead());
-			m_balls.erase(std::remove(m_balls.begin(), m_balls.end(), nullptr), m_balls.end());
+			erase_dead_entities(m_balls);
 			// If no more balls left => game over
 			if (m_balls.size() == 0) game_over("Out of balls!\n");
+
+			// Remove all dead brick paricles
+			erase_dead_entities(m_brickParticles);
 
 			// END UPDATES
 
@@ -264,6 +291,9 @@ void MainGame::drawGame() {
 	}
 	for (auto pu : m_powerUps) {
 		pu->draw(m_agentSpriteBatch);
+	}
+	for (auto bp : m_brickParticles) {
+		bp->draw(m_agentSpriteBatch);
 	}
 
 	// TIL HERE

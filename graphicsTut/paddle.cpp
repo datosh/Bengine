@@ -43,9 +43,8 @@ void Paddle::update(MainGame* mainGame, float deltaTime)
 		m_position.x = mainGame->get_width() - m_width;
 
 	// Check for collision with powerup
-	auto power_ups = mainGame->get_powerUps();
-	if (Entity* collided_entity = collideWithEntities({ power_ups.begin(), power_ups.end() })) {
-		PowerUp* collided_power_up = static_cast<PowerUp*>(collided_entity);
+	if (Entity* collided_entity = collideWithEntities(mainGame->get_powerUps())) {
+		PowerUp* collided_power_up = dynamic_cast<PowerUp*>(collided_entity);
 		auto pu_name = collided_power_up->get_name();
 
 		if (pu_name == "paddle_size") {

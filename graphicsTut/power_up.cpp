@@ -19,6 +19,8 @@ void PowerUp::init(MainGame * mainGame)
 void PowerUp::update(MainGame * mainGame, float deltaTime)
 {
 	m_position.y -= m_speed * deltaTime;
+
+	if (m_position.y < -50) m_alive = false;
 }
 
 void PowerUp::draw(Bengine::SpriteBatch & spriteBatch)

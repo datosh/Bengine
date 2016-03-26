@@ -39,6 +39,9 @@
     <ClCompile Include="utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="brick_particles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mainGame.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="power_up.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="brick_particles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
