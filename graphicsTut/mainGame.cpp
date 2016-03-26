@@ -3,13 +3,17 @@
 #include <Bengine/Bengine.h>
 #include <Bengine/Timing.h>
 
+#include "utility.h"
+#include "../include/glm/gtx/rotate_vector.hpp"
+
 #include <SDL.h>
 #include <iostream>
 
 MainGame::MainGame() :
 	m_screenWidth(1024),
 	m_screenHeight(768),
-	m_fps(0)
+	m_fps(0),
+	m_points(0)
 {
 	m_gameState = GameState::PLAY;
 }
@@ -32,12 +36,45 @@ void MainGame::game_over(std::string message)
 	m_gameState = GameState::EXIT;
 }
 
+void MainGame::add_power_up(const std::string & name, glm::vec2 position)
+{
+	PowerUp* pu = new PowerUp();
+	pu->init(position, glm::vec2(50, 25), Bengine::ColorRGBA8(105, 55, 0, 255), name);
+	m_powerUps.push_back(pu);
+}
+
+void MainGame::add_random_power_up(glm::vec2 position)
+{
+	auto listOfPowerUps = PowerUp::get_powerUpNames();
+	auto randIdx = util::randInt(0, listOfPowerUps.size() - 1);
+	add_power_up(listOfPowerUps[randIdx], position);
+}
+
+void MainGame::double_balls()
+{
+	size_t num_balls = m_balls.size();
+	for (size_t i = 0; i < num_balls; ++i)
+	{
+		auto& ball = m_balls[i];
+
+		auto velo = ball->get_velocity();
+		auto pos = ball->get_position();
+
+		velo = glm::rotate(velo, 20.0f);
+		
+		m_balls.push_back(new Ball());
+		m_balls.back()->init(this);
+		m_balls.back()->set_velocity(velo);
+		m_balls.back()->set_position(pos);
+	}
+}
+
 void MainGame::initSystems() {
 	// Init GameEngine
 	Bengine::init();
 
 	m_window.create("Zombie Game", m_screenWidth, m_screenHeight, 0);
-	glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+	glClearColor(0.03f, 0.27f, 0.36f, 1.0f);
 
 	initShaders();
 
@@ -57,12 +94,25 @@ void MainGame::initSystems() {
 void MainGame::initLevel()
 {
 	// Do all init stuff here
+	
+	// Init the player/paddle
 	m_paddle = new Paddle();
 	m_paddle->init(this);
 	m_paddle->setInputManager(&m_inputManager);
 
-	m_ball = new Ball();
-	m_ball->init(this);
+	// Init the ball
+	m_balls.push_back(new Ball());
+	m_balls.back()->init(this);
+
+	// Init the bricks
+	Bengine::ColorRGBA8 brickBaseColor(2, 29, 39, 255);
+	glm::vec2 brickBaseSize(75, 30);
+	std::string brickTexturePath("Textures/light_bricks.png");
+	for (size_t i = 0; i < 10; ++i)
+	{
+		m_bricks.push_back(new Brick());
+		m_bricks.back()->init(glm::vec2(100 + i * 80, 450), brickBaseSize, brickBaseColor, 7);
+	}
 }
 
 void MainGame::initShaders() {
@@ -112,7 +162,31 @@ void MainGame::gameLoop() {
 			// BEGIN UPDATES
 			
 			m_paddle->update(this, deltaTime);
-			m_ball->update(this, deltaTime);
+			for (auto ball : m_balls) {
+				ball->update(this, deltaTime);
+			}
+			for (auto brick : m_bricks) {
+				brick->update(this, deltaTime);
+			}
+			for (auto pu : m_powerUps) {	
+				pu->update(this, deltaTime);
+			}
+
+			// Remove all dead bricks
+			std::for_each(m_bricks.begin(), m_bricks.end(), DeleteIfBrickDead());
+			m_bricks.erase(std::remove(m_bricks.begin(), m_bricks.end(), nullptr), m_bricks.end());
+			// If no more bricks => game over, since won
+			if (m_bricks.size() == 0) game_over("No more bricks - yeahy!\n");
+
+			// Remove all dead power ups
+			std::for_each(m_powerUps.begin(), m_powerUps.end(), DeleteIfPowerUpDead());
+			m_powerUps.erase(std::remove(m_powerUps.begin(), m_powerUps.end(), nullptr), m_powerUps.end());
+
+			// Remoave all dead balls
+			std::for_each(m_balls.begin(), m_balls.end(), DeleteIfBallDead());
+			m_balls.erase(std::remove(m_balls.begin(), m_balls.end(), nullptr), m_balls.end());
+			// If no more balls left => game over
+			if (m_balls.size() == 0) game_over("Out of balls!\n");
 
 			// END UPDATES
 
@@ -182,7 +256,15 @@ void MainGame::drawGame() {
 
 	// DRAW HERE
 	m_paddle->draw(m_agentSpriteBatch);
-	m_ball->draw(m_agentSpriteBatch);
+	for (auto ball : m_balls) {
+		ball->draw(m_agentSpriteBatch);
+	}
+	for (auto brick : m_bricks) {
+		brick->draw(m_agentSpriteBatch);
+	}
+	for (auto pu : m_powerUps) {
+		pu->draw(m_agentSpriteBatch);
+	}
 
 	// TIL HERE
 
@@ -213,7 +295,7 @@ void MainGame::drawHUD()
 
 	// Start rendering the HUD
 
-	sprintf_s(buffer, "Points ");
+	sprintf_s(buffer, "Points %u", m_points);
 	m_spriteFont->draw(m_hudSpriteBatch, buffer,
 		glm::vec2(m_screenWidth / 2, m_screenHeight - 50),
 		glm::vec2(.5f), 0.0f,
