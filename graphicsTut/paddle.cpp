@@ -48,7 +48,7 @@ void Paddle::update(MainGame* mainGame, float deltaTime)
 		auto pu_name = collided_power_up->get_name();
 
 		if (pu_name == "paddle_size") {
-			m_to_grow = 30.0f;
+			m_to_grow += 30.0f;
 		}
 		else if (pu_name == "times_two") {
 			mainGame->double_balls();

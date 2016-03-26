@@ -28,7 +28,7 @@ void BrickParticle::update(MainGame * mainGame, float deltaTime)
 	m_height -= m_shrink_factor * deltaTime;
 
 	// Mark for deletion if not longer visible
-	if (m_height < 1 | m_width < 1) {
+	if (m_height < 1 || m_width < 1) {
 		kill();
 	}
 }

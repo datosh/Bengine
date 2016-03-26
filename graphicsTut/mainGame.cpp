@@ -16,6 +16,7 @@ MainGame::MainGame() :
 	m_points(0)
 {
 	m_gameState = GameState::PLAY;
+	m_last_pause_pressed = util::get_time();
 }
 
 MainGame::~MainGame() {
@@ -165,7 +166,7 @@ void MainGame::gameLoop() {
 
 	float previousTicks = SDL_GetTicks();
 
-	while (m_gameState == GameState::PLAY)
+	while (m_gameState != GameState::EXIT)
 	{
 		fpsLimiter.begin();
 
@@ -184,36 +185,54 @@ void MainGame::gameLoop() {
 			float deltaTime = std::min(totalDeltaTime, MAX_DELTA_TIME);
 
 			// BEGIN UPDATES
+			if (m_inputManager.isKeyDown(SDLK_p) && util::time_dif_gt(m_last_pause_pressed, util::get_time(), m_time_between_pause)) {
+
+				m_last_pause_pressed = util::get_time();
+
+				if (m_gameState == GameState::PAUSED) m_gameState = GameState::PLAY;
+				else m_gameState = GameState::PAUSED;
+			}
 			
-			m_paddle->update(this, deltaTime);
-			for (auto ball : m_balls) {
-				ball->update(this, deltaTime);
-			}
-			for (auto brick : m_bricks) {
-				brick->update(this, deltaTime);
-			}
-			for (auto pu : m_powerUps) {	
-				pu->update(this, deltaTime);
-			}
-			for (auto bp : m_brickParticles) {
-				bp->update(this, deltaTime);
-			}
+			// Only update the actual game when the game is not paused
+			if (m_gameState != GameState::PAUSED) {
+				m_paddle->update(this, deltaTime);
+				for (auto ball : m_balls) {
+					ball->update(this, deltaTime);
+				}
+				for (auto brick : m_bricks) {
+					brick->update(this, deltaTime);
+				}
+				for (auto pu : m_powerUps) {
+					pu->update(this, deltaTime);
+				}
+				for (auto bp : m_brickParticles) {
+					bp->update(this, deltaTime);
+				}
 
-			// Remove all dead bricks
-			erase_dead_entities(m_bricks);
-			// If no more bricks => game over, since won
-			if (m_bricks.size() == 0) game_over("No more bricks - yeahy!\n");
+				// Remove all dead bricks
+				erase_dead_entities(m_bricks);
+				// If no more bricks => game over, since won
+				if (m_bricks.size() == 0) game_over("No more bricks - yeahy!\n");
 
-			// Remove all dead power ups
-			erase_dead_entities(m_powerUps);
+				// Remove all dead power ups
+				erase_dead_entities(m_powerUps);
 
-			// Remoave all dead balls
-			erase_dead_entities(m_balls);
-			// If no more balls left => game over
-			if (m_balls.size() == 0) game_over("Out of balls!\n");
+				// Remoave all dead balls
+				erase_dead_entities(m_balls);
+				// If no more balls left => game over
+				if (m_balls.size() == 0) game_over("Out of balls!\n");
 
-			// Remove all dead brick paricles
-			erase_dead_entities(m_brickParticles);
+				// Remove all dead brick paricles
+				erase_dead_entities(m_brickParticles);
+
+				
+			}
+			else // If the game is paused
+			{
+				// Make the paused message animate
+				m_paused_alpha -= m_alpha_anim_speed;
+				if (m_paused_alpha <= 0) m_paused_alpha = 255;
+			}
 
 			// END UPDATES
 
@@ -330,6 +349,14 @@ void MainGame::drawHUD()
 		glm::vec2(m_screenWidth / 2, m_screenHeight - 50),
 		glm::vec2(.5f), 0.0f,
 		Bengine::ColorRGBA8(255, 255, 255, 255));
+
+	// If game is paused show PAUSED message
+	if (m_gameState == GameState::PAUSED) {
+		m_spriteFont->draw(m_hudSpriteBatch, m_paused_msg.c_str(),
+			glm::vec2(m_screenWidth / 2 - m_paused_msg.length() * 2, m_screenHeight / 2 + 5),
+			glm::vec2(.5f), 0.0f,
+			Bengine::ColorRGBA8(255, 255, 255, m_paused_alpha));
+	}
 	
 	// End rendering the HUD
 

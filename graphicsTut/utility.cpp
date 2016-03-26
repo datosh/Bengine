@@ -31,4 +31,14 @@ namespace util {
 	bool ffgt(float a, float b, float delta) {
 		return a > b + delta || ffeq(a, b, delta);
 	}
+
+	time get_time()
+	{
+		return std::chrono::high_resolution_clock::now();
+	}
+
+	bool time_dif_gt(time t1, time t2, long long x)
+	{
+		return std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t2).count()) > x;
+	}
 }

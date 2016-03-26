@@ -15,10 +15,12 @@
 #include "brick.h"
 #include "power_up.h"
 #include "brick_particles.h"
+#include "utility.h"
 
 enum class GameState {
 	PLAY,
-	EXIT
+	EXIT,
+	PAUSED
 };
 
 class MainGame
@@ -104,5 +106,11 @@ private:
 	std::vector<Entity*> m_brickParticles;
 
 	unsigned int m_points;
+
+	std::string m_paused_msg = "PAUSED!";
+	util::time m_last_pause_pressed;
+	long long m_time_between_pause = 500;
+	int m_paused_alpha = 255;
+	int m_alpha_anim_speed = 5;
 };
 
