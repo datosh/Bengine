@@ -164,14 +164,14 @@ void MainGame::gameLoop() {
 	const float CAMERA_SCALE = 1.0f / 1.0f;
 	m_camera.setScale(CAMERA_SCALE);
 
-	float previousTicks = SDL_GetTicks();
+	float previousTicks = static_cast<float>(SDL_GetTicks());
 
 	while (m_gameState != GameState::EXIT)
 	{
 		fpsLimiter.begin();
 
 		// Calculate the delta time
-		float newTicks = SDL_GetTicks();
+		float newTicks = static_cast<float>(SDL_GetTicks());
 		float frameTime = newTicks - previousTicks;
 		previousTicks = newTicks;
 		float totalDeltaTime = frameTime / DESIRED_FRAMETIME;
@@ -261,7 +261,7 @@ void MainGame::processInput() {
 			m_gameState = GameState::EXIT;
 			break;
 		case SDL_MOUSEMOTION:
-			m_inputManager.setMouseCoords(evnt.motion.x, evnt.motion.y);
+			m_inputManager.setMouseCoords(static_cast<float>(evnt.motion.x), static_cast<float>(evnt.motion.y));
 			break;
 		case SDL_KEYDOWN:
 			m_inputManager.pressKey(evnt.key.keysym.sym);
